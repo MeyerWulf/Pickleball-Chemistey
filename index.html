@@ -1,31 +1,207 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Pickleball Intelligence</title><link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#12261f">
+<title>Pickleball Intelligence</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header><div><small>PICKLEBALL INTELLIGENCE</small><h1>Better matches. Better chemistry.</h1></div><button id="addBtn">+ Add player</button></header>
+<header>
+  <div><small>PICKLEBALL INTELLIGENCE</small><h1>Better matches. Better chemistry.</h1></div>
+  <button id="addBtn">+ Add player</button>
+</header>
+
 <nav>
-<button class="tab active" data-view="session">Session</button><button class="tab" data-view="players">Players</button><button class="tab" data-view="chemistry">Chemistry</button><button class="tab" data-view="data">Data</button>
+  <button class="tab active" data-view="session">Session</button>
+  <button class="tab" data-view="results">Results</button>
+  <button class="tab" data-view="players">Players</button>
+  <button class="tab" data-view="chemistry">Chemistry</button>
+  <button class="tab" data-view="data">Data</button>
 </nav>
+
 <main>
 <section id="session" class="view active">
-<div class="grid"><article><div class="head"><div><small>TONIGHT</small><h2>Session setup</h2></div><span id="activeCount" class="pill"></span></div>
-<div class="fields"><label>Courts<select id="courts"></select></label><label>Matchmaking mode<select id="mode"><option value="balanced">Balanced + variety</option><option value="competitive">Most competitive</option><option value="discover">Discover chemistry</option><option value="social">Social rotation</option></select></label></div>
-<div id="sessionPlayers" class="checklist"></div><div class="actions"><button class="secondary" id="selectAll">Select all active</button><button id="generate">Generate matches</button></div></article>
-<article><div class="head"><div><small>DECISION SUPPORT</small><h2>Session health</h2></div><b id="grade" class="grade">—</b></div><div id="health" class="muted">Generate matches to score this session.</div></article></div>
-<div id="matches" class="matches"></div></section>
-<section id="players" class="view"><article><div class="head"><div><small>ROSTER</small><h2>Player profiles</h2></div><label class="inline"><input id="showArchived" type="checkbox"> Show archived</label></div><input id="search" placeholder="Search players…"><div id="playerCards" class="cards"></div></article></section>
-<section id="chemistry" class="view"><article><small>PARTNERSHIP INTELLIGENCE</small><h2>Chemistry profile</h2><div class="fields"><label>Player one<select id="chemA"></select></label><label>Player two<select id="chemB"></select></label></div><div id="chemPanel" class="muted">Choose two players.</div></article></section>
-<section id="data" class="view"><div class="grid"><article><small>IMPORT</small><h2>CSV roster</h2><p class="muted">Required columns: name and age. Optional: rating, handedness, gender, side, style, club, email, phone, duprId and notes.</p><input id="csv" type="file" accept=".csv"><div id="preview"></div></article><article><small>BACKUP</small><h2>Export</h2><p class="muted">Download the roster and history.</p><div class="actions"><button id="exportJson">JSON backup</button><button id="exportCsv" class="secondary">CSV roster</button></div><hr><button id="reset" class="danger">Reset demo data</button></article></div></section>
+  <article class="session-title-card">
+    <div class="head">
+      <div>
+        <small id="sessionDay">SESSION</small>
+        <h2 id="sessionHeading">New session</h2>
+      </div>
+      <span id="activeCount" class="pill"></span>
+    </div>
+    <div class="session-fields">
+      <label>Session name
+        <input id="sessionName" value="Tuesday Night Thunder" maxlength="80">
+      </label>
+      <label>Session date
+        <input id="sessionDate" type="date">
+      </label>
+      <label>Load roster from previous session
+        <select id="previousSession"><option value="">Choose a previous session…</option></select>
+      </label>
+      <button id="loadPrevious" class="secondary align-end">Load roster</button>
+    </div>
+  </article>
+
+  <div class="grid">
+    <article>
+      <div class="head"><div><small>SESSION SETUP</small><h2>Players and matchmaking</h2></div></div>
+
+      <div class="matchmaking-block">
+        <label class="prominent">Matchmaking mode
+          <select id="mode">
+            <option value="balanced">Balanced + variety</option>
+            <option value="competitive">Most competitive</option>
+            <option value="discover">Discover chemistry</option>
+            <option value="social">Social rotation</option>
+          </select>
+        </label>
+        <label>Number of courts
+          <select id="courts"></select>
+        </label>
+      </div>
+
+      <div class="roster-tools">
+        <input id="sessionPlayerSearch" placeholder="Find a player…">
+        <button class="secondary" id="selectAll">Select all active</button>
+        <button class="secondary" id="clearAll">Clear selection</button>
+      </div>
+      <div id="sessionPlayers" class="checklist"></div>
+      <div class="actions end"><button id="generate">Generate matches</button></div>
+    </article>
+
+    <article>
+      <div class="head"><div><small>DECISION SUPPORT</small><h2>Session health</h2></div><b id="grade" class="grade">—</b></div>
+      <div id="health" class="muted">Generate matches to score this session.</div>
+    </article>
+  </div>
+
+  <div id="matches" class="matches"></div>
+
+  <article id="sessionResultsCard">
+    <div class="head">
+      <div><small>LIVE SESSION DATA</small><h2>Recorded games and standings</h2></div>
+      <button class="secondary" data-go-results>Open full results</button>
+    </div>
+    <div id="sessionSummary" class="muted">No scores recorded in this session yet.</div>
+  </article>
+</section>
+
+<section id="results" class="view">
+  <article>
+    <div class="head">
+      <div><small>SESSION RESULTS</small><h2>Scores, rankings and performance</h2></div>
+      <label>Session<select id="resultsSession"></select></label>
+    </div>
+    <div id="resultsOverview"></div>
+    <h3>Standings</h3>
+    <div id="standings"></div>
+    <h3>Game log</h3>
+    <div id="gameLog"></div>
+  </article>
+</section>
+
+<section id="players" class="view">
+  <article>
+    <div class="head">
+      <div><small>ROSTER</small><h2>Player profiles</h2></div>
+      <label class="inline"><input id="showArchived" type="checkbox"> Show archived</label>
+    </div>
+    <input id="search" placeholder="Search players…">
+    <div id="playerCards" class="cards"></div>
+  </article>
+</section>
+
+<section id="chemistry" class="view">
+  <article>
+    <div class="head"><div><small>PARTNERSHIP INTELLIGENCE</small><h2>Chemistry results</h2></div></div>
+    <div class="chem-filters">
+      <label>Session<select id="chemSession"></select></label>
+      <label>Filter by player<select id="chemPlayer"></select></label>
+      <label>Detailed comparison — player one<select id="chemA"></select></label>
+      <label>Detailed comparison — player two<select id="chemB"></select></label>
+    </div>
+    <div id="chemPanel" class="muted">Choose two players for a detailed profile.</div>
+    <h3>All partnerships</h3>
+    <div id="chemTable"></div>
+  </article>
+</section>
+
+<section id="data" class="view">
+  <div class="grid">
+    <article>
+      <small>IMPORT</small><h2>CSV roster</h2>
+      <p class="muted">Required columns: name and age. Optional: rating, handedness, gender, side, style, club, email, phone, duprId and notes.</p>
+      <input id="csv" type="file" accept=".csv">
+      <div id="preview"></div>
+    </article>
+    <article>
+      <small>BACKUP</small><h2>Export</h2>
+      <p class="muted">Download the roster, sessions, match history and chemistry.</p>
+      <div class="actions">
+        <button id="exportJson">JSON backup</button>
+        <button id="exportCsv" class="secondary">CSV roster</button>
+      </div>
+      <hr><button id="reset" class="danger">Reset demo data</button>
+    </article>
+  </div>
+</section>
 </main>
-<dialog id="playerDialog"><form id="playerForm"><div class="head"><h2 id="formTitle">Add player</h2><button type="button" class="close" data-close>×</button></div><input type="hidden" id="pid"><div class="fields">
-<label class="wide">Name *<input id="name" required></label><label>Age *<input id="age" type="number" min="8" max="100" required></label><label>External/DUPR rating<input id="rating" type="number" min="1" max="8" step=".01" value="3.50"></label>
-<label>Handedness<select id="handedness"><option>Right</option><option>Left</option><option>Ambidextrous</option></select></label><label>Gender (optional)<select id="gender"><option value="">Prefer not to say</option><option>Woman</option><option>Man</option><option>Nonbinary</option><option>Other</option></select></label>
-<label>Preferred side<select id="side"><option>Either</option><option>Left</option><option>Right</option></select></label><label>Play style<select id="style"><option>Balanced</option><option>Aggressive</option><option>Defensive / reset-oriented</option><option>Speed-up heavy</option><option>Power-oriented</option></select></label>
-<label>Home club<input id="club"></label><label>Email<input id="email" type="email"></label><label>Phone<input id="phone" type="tel"></label><label>DUPR profile ID or URL<input id="duprId"></label><label class="wide">Notes<textarea id="notes"></textarea></label></div>
-<label class="consent"><input id="consent" type="checkbox"> Player consented to storage of profile/contact information.</label><p class="fine">Never enter a DUPR password here. A production connection must use DUPR-authorized authentication and a formal privacy policy.</p><div class="actions end"><button type="button" class="secondary" data-close>Cancel</button><button>Save player</button></div></form></dialog>
-<dialog id="resultDialog"><form id="resultForm"><div class="head"><h2>Record result</h2><button type="button" class="close" data-result-close>×</button></div><input id="matchId" type="hidden"><div id="resultTeams"></div><div class="fields"><label>Team A score<input id="scoreA" type="number" min="0" max="30" required></label><label>Team B score<input id="scoreB" type="number" min="0" max="30" required></label></div><h3>Partnership feedback</h3><p class="muted">Optional 1–10 ratings. Actual outcomes remain the stronger signal.</p><div id="ratingInputs"></div><div class="actions end"><button type="button" class="secondary" data-result-close>Cancel</button><button>Save result</button></div></form></dialog>
-<div id="toast"></div><script src="app.js"></script>
-</body></html>
+
+<dialog id="playerDialog">
+<form id="playerForm">
+  <div class="head"><h2 id="formTitle">Add player</h2><button type="button" class="close" data-close>×</button></div>
+  <input type="hidden" id="pid">
+  <div class="fields">
+    <label class="wide">Name *<input id="name" required></label>
+    <label>Age *<input id="age" type="number" min="8" max="100" required></label>
+    <label>External/DUPR rating<input id="rating" type="number" min="1" max="8" step=".01" value="3.50"></label>
+    <label>Handedness<select id="handedness"><option>Right</option><option>Left</option><option>Ambidextrous</option></select></label>
+    <label>Gender (optional)<select id="gender"><option value="">Prefer not to say</option><option>Male</option><option>Female</option><option>Nonbinary</option><option>Other</option></select></label>
+    <label>Preferred side<select id="side"><option>Either</option><option>Left</option><option>Right</option></select></label>
+    <label>Play style<select id="style"><option>Balanced</option><option>Aggressive</option><option>Defensive / reset-oriented</option><option>Speed-up heavy</option><option>Power-oriented</option></select></label>
+    <label>Home club<input id="club"></label>
+    <label>Email<input id="email" type="email"></label>
+    <label>Phone<input id="phone" type="tel"></label>
+    <label>DUPR profile ID or URL<input id="duprId"></label>
+    <label class="wide">Notes<textarea id="notes"></textarea></label>
+  </div>
+  <label class="consent"><input id="consent" type="checkbox"> Player consented to storage of profile/contact information.</label>
+  <p class="fine">Never enter a DUPR password here. A production connection must use DUPR-authorized authentication and a formal privacy policy.</p>
+  <div class="actions end"><button type="button" class="secondary" data-close>Cancel</button><button>Save player</button></div>
+</form>
+</dialog>
+
+<dialog id="resultDialog">
+<form id="resultForm">
+  <div class="head"><h2>Record result</h2><button type="button" class="close" data-result-close>×</button></div>
+  <input id="matchId" type="hidden">
+  <div class="score-entry">
+    <div class="score-team team-a-box">
+      <span>TEAM A</span><b id="resultTeamA"></b>
+      <label>Score
+        <input id="scoreA" type="number" min="0" max="21" list="scoreChoices" inputmode="numeric" required>
+      </label>
+    </div>
+    <div class="score-team team-b-box">
+      <span>TEAM B</span><b id="resultTeamB"></b>
+      <label>Score
+        <input id="scoreB" type="number" min="0" max="21" list="scoreChoices" inputmode="numeric" required>
+      </label>
+    </div>
+  </div>
+  <datalist id="scoreChoices"></datalist>
+  <p class="fine">Tap the score field to type a score, or choose a common value. Scores from 0–21 are accepted.</p>
+  <h3>Partnership feedback</h3>
+  <p class="muted">Optional 1–10 ratings. Actual outcomes remain the stronger signal.</p>
+  <div id="ratingInputs"></div>
+  <div class="actions end"><button type="button" class="secondary" data-result-close>Cancel</button><button>Save result</button></div>
+</form>
+</dialog>
+
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
