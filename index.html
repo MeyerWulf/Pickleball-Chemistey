@@ -1,207 +1,240 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#12261f">
-<title>Pickleball Intelligence</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#14211b">
+  <title>Pickleball Intelligence 1.2</title>
+  <link rel="stylesheet" href="./assets/css/styles.css">
 </head>
 <body>
-<header>
-  <div><small>PICKLEBALL INTELLIGENCE</small><h1>Better matches. Better chemistry.</h1></div>
-  <button id="addBtn">+ Add player</button>
-</header>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">PICKLEBALL INTELLIGENCE</p>
+      <h1 id="headerEventName">Tuesday Night Thunder</h1>
+      <p id="headerEventDate" class="muted"></p>
+    </div>
+    <div class="top-actions">
+      <span class="version">v1.2</span>
+      <button id="seedDemoBtn" class="ghost">Restore demo</button>
+    </div>
+  </header>
 
-<nav>
-  <button class="tab active" data-view="session">Session</button>
-  <button class="tab" data-view="results">Results</button>
-  <button class="tab" data-view="players">Players</button>
-  <button class="tab" data-view="chemistry">Chemistry</button>
-  <button class="tab" data-view="data">Data</button>
-</nav>
+  <nav class="tabs" aria-label="Primary navigation">
+    <button class="tab active" data-view="event">Event</button>
+    <button class="tab" data-view="stages">Stages</button>
+    <button class="tab" data-view="results">Results</button>
+    <button class="tab" data-view="players">Players</button>
+    <button class="tab" data-view="chemistry">Chemistry</button>
+    <button class="tab" data-view="data">Data</button>
+  </nav>
 
-<main>
-<section id="session" class="view active">
-  <article class="session-title-card">
-    <div class="head">
-      <div>
-        <small id="sessionDay">SESSION</small>
-        <h2 id="sessionHeading">New session</h2>
+  <main>
+    <section id="view-event" class="view active">
+      <div class="grid two">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">EVENT SETUP</p>
+              <h2>Plan freely. Play flexibly.</h2>
+            </div>
+            <span id="eventStatusBadge" class="badge">Active</span>
+          </div>
+
+          <div class="form-grid">
+            <label>Event name
+              <input id="eventName" type="text">
+            </label>
+            <label>Date
+              <input id="eventDate" type="date">
+            </label>
+            <label>Planned stages
+              <select id="plannedStages">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="custom">Custom</option>
+                <option value="open">Open-ended</option>
+              </select>
+            </label>
+            <label id="customStagesWrap" class="hidden">Custom stage count
+              <input id="customStageCount" type="number" min="1" max="20" value="4">
+            </label>
+            <label>Number of courts
+              <input id="courtCount" type="number" min="1" max="25" value="4">
+            </label>
+            <label>Matchmaking mode
+              <select id="matchmakingMode">
+                <option value="balanced">Balanced</option>
+                <option value="competitive">Competitive</option>
+                <option value="discovery">Discovery</option>
+                <option value="social">Social</option>
+              </select>
+            </label>
+          </div>
+          <button id="saveEventBtn" class="primary">Save event setup</button>
+        </article>
+
+        <article class="card">
+          <p class="eyebrow">EVENT PROGRESS</p>
+          <div id="eventMetrics" class="metrics"></div>
+          <div class="action-row wrap">
+            <button id="startNextStageBtn" class="primary">Start next stage</button>
+            <button id="addStageBtn">Add stage</button>
+            <button id="endEventBtn" class="danger-soft">End event</button>
+          </div>
+          <p class="note">Only games with recorded scores affect standings, ratings, chemistry, or statistics.</p>
+        </article>
       </div>
-      <span id="activeCount" class="pill"></span>
-    </div>
-    <div class="session-fields">
-      <label>Session name
-        <input id="sessionName" value="Tuesday Night Thunder" maxlength="80">
-      </label>
-      <label>Session date
-        <input id="sessionDate" type="date">
-      </label>
-      <label>Load roster from previous session
-        <select id="previousSession"><option value="">Choose a previous session…</option></select>
-      </label>
-      <button id="loadPrevious" class="secondary align-end">Load roster</button>
-    </div>
-  </article>
 
-  <div class="grid">
-    <article>
-      <div class="head"><div><small>SESSION SETUP</small><h2>Players and matchmaking</h2></div></div>
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">LIVE EVENT BOARD</p>
+            <h2>What is happening now</h2>
+          </div>
+        </div>
+        <div id="liveBoard"></div>
+      </article>
+    </section>
 
-      <div class="matchmaking-block">
-        <label class="prominent">Matchmaking mode
-          <select id="mode">
-            <option value="balanced">Balanced + variety</option>
-            <option value="competitive">Most competitive</option>
-            <option value="discover">Discover chemistry</option>
-            <option value="social">Social rotation</option>
-          </select>
-        </label>
-        <label>Number of courts
-          <select id="courts"></select>
-        </label>
+    <section id="view-stages" class="view">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">EVENT PLANNER</p>
+          <h2>Stages and forward look</h2>
+        </div>
+        <button id="addStageTopBtn" class="primary">Add stage</button>
+      </div>
+      <div id="stageList"></div>
+    </section>
+
+    <section id="view-results" class="view">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">LIVE RESULTS</p>
+          <h2>Standings and game history</h2>
+        </div>
+        <select id="resultsStageFilter" aria-label="Filter results by stage"></select>
       </div>
 
-      <div class="roster-tools">
-        <input id="sessionPlayerSearch" placeholder="Find a player…">
-        <button class="secondary" id="selectAll">Select all active</button>
-        <button class="secondary" id="clearAll">Clear selection</button>
+      <article class="card">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th><th>Player</th><th>DUPR</th><th>Session</th><th>Δ</th>
+                <th>W</th><th>L</th><th>Win %</th>
+                <th><span class="tip" tabindex="0" data-tip="Points For: total points scored by this player's teams.">PF ⓘ</span></th>
+                <th><span class="tip" tabindex="0" data-tip="Points Against: total points scored against this player's teams.">PA ⓘ</span></th>
+                <th><span class="tip" tabindex="0" data-tip="Point Differential: Points For minus Points Against.">Diff ⓘ</span></th>
+                <th>Confidence</th>
+              </tr>
+            </thead>
+            <tbody id="standingsBody"></tbody>
+          </table>
+        </div>
+        <p class="note">Session rating estimates performance within this event; it is not an official DUPR rating.</p>
+      </article>
+
+      <article class="card">
+        <p class="eyebrow">GAME LOG</p>
+        <div id="gameLog"></div>
+      </article>
+    </section>
+
+    <section id="view-players" class="view">
+      <div class="section-title">
+        <div><p class="eyebrow">ROSTER</p><h2>Players</h2></div>
+        <button id="addPlayerBtn" class="primary">Add player</button>
       </div>
-      <div id="sessionPlayers" class="checklist"></div>
-      <div class="actions end"><button id="generate">Generate matches</button></div>
-    </article>
+      <div id="playerGrid" class="player-grid"></div>
+    </section>
 
-    <article>
-      <div class="head"><div><small>DECISION SUPPORT</small><h2>Session health</h2></div><b id="grade" class="grade">—</b></div>
-      <div id="health" class="muted">Generate matches to score this session.</div>
-    </article>
-  </div>
-
-  <div id="matches" class="matches"></div>
-
-  <article id="sessionResultsCard">
-    <div class="head">
-      <div><small>LIVE SESSION DATA</small><h2>Recorded games and standings</h2></div>
-      <button class="secondary" data-go-results>Open full results</button>
-    </div>
-    <div id="sessionSummary" class="muted">No scores recorded in this session yet.</div>
-  </article>
-</section>
-
-<section id="results" class="view">
-  <article>
-    <div class="head">
-      <div><small>SESSION RESULTS</small><h2>Scores, rankings and performance</h2></div>
-      <label>Session<select id="resultsSession"></select></label>
-    </div>
-    <div id="resultsOverview"></div>
-    <h3>Standings</h3>
-    <div id="standings"></div>
-    <h3>Game log</h3>
-    <div id="gameLog"></div>
-  </article>
-</section>
-
-<section id="players" class="view">
-  <article>
-    <div class="head">
-      <div><small>ROSTER</small><h2>Player profiles</h2></div>
-      <label class="inline"><input id="showArchived" type="checkbox"> Show archived</label>
-    </div>
-    <input id="search" placeholder="Search players…">
-    <div id="playerCards" class="cards"></div>
-  </article>
-</section>
-
-<section id="chemistry" class="view">
-  <article>
-    <div class="head"><div><small>PARTNERSHIP INTELLIGENCE</small><h2>Chemistry results</h2></div></div>
-    <div class="chem-filters">
-      <label>Session<select id="chemSession"></select></label>
-      <label>Filter by player<select id="chemPlayer"></select></label>
-      <label>Detailed comparison — player one<select id="chemA"></select></label>
-      <label>Detailed comparison — player two<select id="chemB"></select></label>
-    </div>
-    <div id="chemPanel" class="muted">Choose two players for a detailed profile.</div>
-    <h3>All partnerships</h3>
-    <div id="chemTable"></div>
-  </article>
-</section>
-
-<section id="data" class="view">
-  <div class="grid">
-    <article>
-      <small>IMPORT</small><h2>CSV roster</h2>
-      <p class="muted">Required columns: name and age. Optional: rating, handedness, gender, side, style, club, email, phone, duprId and notes.</p>
-      <input id="csv" type="file" accept=".csv">
-      <div id="preview"></div>
-    </article>
-    <article>
-      <small>BACKUP</small><h2>Export</h2>
-      <p class="muted">Download the roster, sessions, match history and chemistry.</p>
-      <div class="actions">
-        <button id="exportJson">JSON backup</button>
-        <button id="exportCsv" class="secondary">CSV roster</button>
+    <section id="view-chemistry" class="view">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">PRIVATE ORGANIZER INTELLIGENCE</p>
+          <h2>Partnership chemistry</h2>
+        </div>
+        <select id="chemistryPlayerFilter"><option value="all">All players</option></select>
       </div>
-      <hr><button id="reset" class="danger">Reset demo data</button>
-    </article>
-  </div>
-</section>
-</main>
+      <article class="card">
+        <p class="note">These partnership estimates are intended for organizers and matchmaking logic. Individual player-to-player ratings are not exposed publicly.</p>
+        <div id="chemistryList"></div>
+      </article>
+    </section>
 
-<dialog id="playerDialog">
-<form id="playerForm">
-  <div class="head"><h2 id="formTitle">Add player</h2><button type="button" class="close" data-close>×</button></div>
-  <input type="hidden" id="pid">
-  <div class="fields">
-    <label class="wide">Name *<input id="name" required></label>
-    <label>Age *<input id="age" type="number" min="8" max="100" required></label>
-    <label>External/DUPR rating<input id="rating" type="number" min="1" max="8" step=".01" value="3.50"></label>
-    <label>Handedness<select id="handedness"><option>Right</option><option>Left</option><option>Ambidextrous</option></select></label>
-    <label>Gender (optional)<select id="gender"><option value="">Prefer not to say</option><option>Male</option><option>Female</option><option>Nonbinary</option><option>Other</option></select></label>
-    <label>Preferred side<select id="side"><option>Either</option><option>Left</option><option>Right</option></select></label>
-    <label>Play style<select id="style"><option>Balanced</option><option>Aggressive</option><option>Defensive / reset-oriented</option><option>Speed-up heavy</option><option>Power-oriented</option></select></label>
-    <label>Home club<input id="club"></label>
-    <label>Email<input id="email" type="email"></label>
-    <label>Phone<input id="phone" type="tel"></label>
-    <label>DUPR profile ID or URL<input id="duprId"></label>
-    <label class="wide">Notes<textarea id="notes"></textarea></label>
-  </div>
-  <label class="consent"><input id="consent" type="checkbox"> Player consented to storage of profile/contact information.</label>
-  <p class="fine">Never enter a DUPR password here. A production connection must use DUPR-authorized authentication and a formal privacy policy.</p>
-  <div class="actions end"><button type="button" class="secondary" data-close>Cancel</button><button>Save player</button></div>
-</form>
-</dialog>
+    <section id="view-data" class="view">
+      <div class="grid two">
+        <article class="card">
+          <p class="eyebrow">BACKUP</p><h2>Export or import data</h2>
+          <div class="action-row wrap">
+            <button id="exportJsonBtn" class="primary">Export JSON</button>
+            <label class="button-like">Import JSON<input id="importJsonInput" type="file" accept=".json" hidden></label>
+            <button id="exportCsvBtn">Export standings CSV</button>
+          </div>
+        </article>
+        <article class="card">
+          <p class="eyebrow">RESET</p><h2>Local prototype storage</h2>
+          <p class="note">This version runs entirely in your browser. No server is required.</p>
+          <button id="clearDataBtn" class="danger-soft">Clear all local data</button>
+        </article>
+      </div>
+    </section>
+  </main>
 
-<dialog id="resultDialog">
-<form id="resultForm">
-  <div class="head"><h2>Record result</h2><button type="button" class="close" data-result-close>×</button></div>
-  <input id="matchId" type="hidden">
-  <div class="score-entry">
-    <div class="score-team team-a-box">
-      <span>TEAM A</span><b id="resultTeamA"></b>
-      <label>Score
-        <input id="scoreA" type="number" min="0" max="21" list="scoreChoices" inputmode="numeric" required>
-      </label>
-    </div>
-    <div class="score-team team-b-box">
-      <span>TEAM B</span><b id="resultTeamB"></b>
-      <label>Score
-        <input id="scoreB" type="number" min="0" max="21" list="scoreChoices" inputmode="numeric" required>
-      </label>
-    </div>
-  </div>
-  <datalist id="scoreChoices"></datalist>
-  <p class="fine">Tap the score field to type a score, or choose a common value. Scores from 0–21 are accepted.</p>
-  <h3>Partnership feedback</h3>
-  <p class="muted">Optional 1–10 ratings. Actual outcomes remain the stronger signal.</p>
-  <div id="ratingInputs"></div>
-  <div class="actions end"><button type="button" class="secondary" data-result-close>Cancel</button><button>Save result</button></div>
-</form>
-</dialog>
+  <dialog id="playerDialog">
+    <form id="playerForm" method="dialog">
+      <div class="dialog-head"><h2 id="playerDialogTitle">Add player</h2><button type="button" class="icon" data-close="playerDialog">×</button></div>
+      <input id="playerId" type="hidden">
+      <div class="form-grid">
+        <label>Name<input id="playerName" required></label>
+        <label>Age<input id="playerAge" type="number" min="10" max="100" required></label>
+        <label>Gender<select id="playerGender"><option value="">Prefer not to say</option><option>Male</option><option>Female</option></select></label>
+        <label>DUPR / external rating<input id="playerDupr" type="number" min="1" max="8" step=".01" required></label>
+        <label>Preferred side<select id="playerSide"><option>Either</option><option>Left</option><option>Right</option></select></label>
+        <label>Play style<select id="playerStyle"><option>Balanced</option><option>Control</option><option>Power</option><option>Counterpuncher</option><option>Setup / Facilitator</option></select></label>
+        <label>Phone<input id="playerPhone" type="tel"></label>
+        <label>Email<input id="playerEmail" type="email"></label>
+      </div>
+      <div class="dialog-actions"><button type="button" data-close="playerDialog">Cancel</button><button class="primary" value="default">Save player</button></div>
+    </form>
+  </dialog>
 
-<div id="toast"></div>
-<script src="app.js"></script>
+  <dialog id="scoreDialog">
+    <form id="scoreForm" method="dialog">
+      <div class="dialog-head"><h2 id="scoreDialogTitle">Record score</h2><button type="button" class="icon" data-close="scoreDialog">×</button></div>
+      <input id="scoreGameId" type="hidden">
+      <div class="score-teams">
+        <label><strong id="scoreTeamAName">Team A</strong><input id="scoreA" type="number" min="0" max="21" required></label>
+        <span class="versus">vs</span>
+        <label><strong id="scoreTeamBName">Team B</strong><input id="scoreB" type="number" min="0" max="21" required></label>
+      </div>
+      <label>Competitiveness (1–10)<input id="scoreCompetitive" type="range" min="1" max="10" value="7"><output id="competitiveOutput">7</output></label>
+      <label>Partnership chemistry (Team A, 1–10)<input id="chemA" type="range" min="1" max="10" value="7"><output id="chemAOutput">7</output></label>
+      <label>Partnership chemistry (Team B, 1–10)<input id="chemB" type="range" min="1" max="10" value="7"><output id="chemBOutput">7</output></label>
+      <div class="dialog-actions"><button type="button" data-close="scoreDialog">Cancel</button><button class="primary" value="default">Save score</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="stageDialog">
+    <form id="stageForm" method="dialog">
+      <div class="dialog-head"><h2>Add stage</h2><button type="button" class="icon" data-close="stageDialog">×</button></div>
+      <div class="form-grid">
+        <label>Stage name<input id="stageName" required></label>
+        <label>Stage format<select id="stageFormat">
+          <option value="round-robin">Round-robin calibration</option>
+          <option value="ranked-pairing">Ranked partner pairing</option>
+          <option value="fixed-partner">Fixed-partner competition</option>
+          <option value="resort">Re-sort by current standings</option>
+          <option value="custom">Custom</option>
+        </select></label>
+      </div>
+      <div class="dialog-actions"><button type="button" data-close="stageDialog">Cancel</button><button class="primary" value="default">Add stage</button></div>
+    </form>
+  </dialog>
+
+  <script type="module" src="./assets/js/app.js"></script>
 </body>
 </html>

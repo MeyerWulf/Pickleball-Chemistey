@@ -1,43 +1,42 @@
-# Pickleball Intelligence — Version 1.1
+# Pickleball Intelligence — Version 1.2
 
-This browser prototype adds persistent named sessions and makes recorded results immediately visible.
+A static, browser-based prototype for planning and operating multi-stage pickleball events.
 
-## New in 1.1
+## New in 1.2
 
-- Session name, date, and automatically displayed day of week
-- Load a roster from a previous session
-- Search/select players for the current session
-- Matchmaking mode emphasized inside Session Setup
-- Team A and Team B labels on generated matches
-- Player names directly above score inputs
-- Typed score entry from 0–21 with common-value suggestions
-- Results tab with:
-  - ranked standings
-  - wins and losses
-  - win percentage
-  - points for and against
-  - point differential
-  - complete game log
-- Live results summary on the Session page
-- Chemistry page with:
-  - session filter
-  - player filter
-  - all-partnership ranking
-  - detailed two-player chemistry profile
-- Gender choices changed to Male and Female
-- Existing Version 1 browser data is migrated where possible
+- Event terminology: Event → Stage → Game → Team → Player
+- Planned stages: 1, 2, 3, Custom, or Open-ended
+- Flexible stage statuses: planned, in progress, completed, skipped, cancelled
+- Add stage, start next stage, skip stage, cancel stage, and end event
+- Stage formats:
+  - Round-robin calibration
+  - Ranked partner pairing
+  - Fixed-partner competition
+  - Re-sort by current standings
+  - Custom
+- Live forward projections for future ranked-pairing stages
+- Editable and deletable scores with automatic recalculation
+- Session Rating and delta from DUPR in standings
+- PF, PA, and differential tooltips
+- Chemistry entered with scores and retained as private organizer intelligence
+- JSON backup/import and CSV standings export
+- Modular file structure suitable for continued development
 
-## Install on GitHub Pages
+## Upload to GitHub Pages
 
-Replace these four files in the repository root:
+Upload the **contents** of this folder to the top level of your GitHub repository:
 
 - `index.html`
-- `styles.css`
-- `app.js`
 - `README.md`
+- `assets/`
 
-Commit the replacement files. GitHub Pages should rebuild automatically.
+Do not upload the outer folder itself as an extra directory level.
 
-## Statistical status
+After GitHub Pages deploys, hard refresh the page:
 
-The current build uses an explainable Elo/Glicko-inspired approximation, confidence/error-bar logic, partnership outcome effects, side/style bonuses, and multi-objective matchup scoring. It is not yet a formally calibrated Glicko-2 implementation. A later server-backed version should implement and test true Glicko-2 updates, doubles contribution modeling, Bayesian chemistry shrinkage, and optimizer calibration.
+- Mac: `Command + Shift + R`
+- Windows: `Ctrl + F5`
+
+## Storage
+
+This prototype uses `localStorage`, so data is saved only in the current browser/device. Real-time phone scoring, QR joins, and multi-device synchronization will require a small cloud database in a future phase.
