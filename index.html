@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pickleball Chemistry</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">SMART OPEN-PLAY MATCHMAKING</p>
+      <h1>Pickleball Chemistry</h1>
+      <p class="subtitle">Build balanced games using skill, partnership chemistry, fairness, and player history.</p>
+    </div>
+    <button id="resetDemo" class="ghost">Reset demo</button>
+  </header>
+
+  <main>
+    <section class="card controls">
+      <div>
+        <h2>Session setup</h2>
+        <p>Select available players, choose the number of courts, then generate the best matchups.</p>
+      </div>
+      <div class="control-row">
+        <label>Courts
+          <select id="courtCount">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </label>
+        <button id="generateBtn" class="primary">Generate matchups</button>
+      </div>
+    </section>
+
+    <section class="grid two-col">
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <h2>Players</h2>
+            <p>Skill uses a 1.0–5.0 scale. Chemistry begins neutral and learns from feedback.</p>
+          </div>
+          <button id="openAddPlayer" class="secondary">+ Add player</button>
+        </div>
+        <div id="playerList" class="player-list"></div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <h2>Session snapshot</h2>
+            <p>Fairness is driven by games played and recent court assignments.</p>
+          </div>
+        </div>
+        <div id="snapshot" class="stats-grid"></div>
+        <div class="legend">
+          <span><i class="dot good"></i> strong chemistry</span>
+          <span><i class="dot neutral"></i> neutral</span>
+          <span><i class="dot weak"></i> weak chemistry</span>
+        </div>
+      </section>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2>Generated courts</h2>
+          <p>Team strength combines skill and learned partner chemistry. Lower balance gaps are better.</p>
+        </div>
+      </div>
+      <div id="courts" class="courts empty-state">No matchups generated yet.</div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2>Chemistry matrix</h2>
+          <p>Values are learned from post-match partner ratings. Neutral is 5.0.</p>
+        </div>
+      </div>
+      <div id="chemistryMatrix" class="matrix-wrap"></div>
+    </section>
+  </main>
+
+  <dialog id="playerDialog">
+    <form method="dialog" id="playerForm" class="dialog-form">
+      <h2>Add player</h2>
+      <label>Name<input id="playerName" required maxlength="30" /></label>
+      <label>Skill rating<input id="playerRating" type="number" min="1" max="5" step="0.1" value="3.5" required /></label>
+      <div class="dialog-actions">
+        <button value="cancel" class="ghost">Cancel</button>
+        <button id="savePlayer" value="default" class="primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="resultDialog">
+    <form method="dialog" id="resultForm" class="dialog-form wide">
+      <h2>Record result</h2>
+      <div id="resultSummary"></div>
+      <div class="score-row">
+        <label>Team A score<input id="scoreA" type="number" min="0" max="99" value="11" /></label>
+        <label>Team B score<input id="scoreB" type="number" min="0" max="99" value="8" /></label>
+      </div>
+      <h3>Partner chemistry feedback</h3>
+      <p class="muted">Rate how well each partnership functioned in this match.</p>
+      <div class="score-row">
+        <label>Team A chemistry<input id="chemA" type="range" min="1" max="10" value="5" /><output id="chemAOut">5</output></label>
+        <label>Team B chemistry<input id="chemB" type="range" min="1" max="10" value="5" /><output id="chemBOut">5</output></label>
+      </div>
+      <div class="dialog-actions">
+        <button value="cancel" class="ghost">Cancel</button>
+        <button id="saveResult" value="default" class="primary">Save result</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
