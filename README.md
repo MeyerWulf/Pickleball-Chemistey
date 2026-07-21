@@ -1,4 +1,4 @@
-# Pickleball Intelligence — Version 1.2
+# Pickleball Intelligence — Version 1.2.1 (Flat Upload Fix)
 
 A static, browser-based prototype for planning and operating multi-stage pickleball events.
 
@@ -24,13 +24,17 @@ A static, browser-based prototype for planning and operating multi-stage pickleb
 
 ## Upload to GitHub Pages
 
-Upload the **contents** of this folder to the top level of your GitHub repository:
+Upload all seven files directly to the top level of your GitHub repository:
 
 - `index.html`
+- `styles.css`
+- `app.js`
+- `data.js`
+- `engine.js`
+- `store.js`
 - `README.md`
-- `assets/`
 
-Do not upload the outer folder itself as an extra directory level.
+This flattened maintenance build avoids missing-folder problems on GitHub Pages.
 
 After GitHub Pages deploys, hard refresh the page:
 
