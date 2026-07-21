@@ -4,8 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#14211b">
-  <title>Pickleball Intelligence 1.2</title>
-  <link rel="stylesheet" href="./styles.css">
+  <title>Pickleball Intelligence 1.2.2</title>
+  <style>
+:root{--bg:#f4f1e9;--card:#fffdf8;--ink:#17211c;--muted:#66706a;--line:#d9ddd7;--green:#176b49;--green2:#0d5035;--gold:#c5933f;--red:#a94141;--shadow:0 10px 30px rgba(21,35,28,.08)}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.topbar{display:flex;justify-content:space-between;align-items:center;padding:22px clamp(18px,4vw,54px);background:#14211b;color:#fff}.topbar h1{margin:2px 0 4px;font-size:clamp(1.4rem,3vw,2.4rem)}.eyebrow{margin:0;color:var(--gold);font-size:.72rem;font-weight:800;letter-spacing:.14em}.muted,.note{color:var(--muted)}.topbar .muted{color:#c8d2cc}.top-actions{display:flex;align-items:center;gap:10px}.version,.badge{padding:6px 10px;border-radius:999px;background:#e8efe9;font-size:.78rem;font-weight:800;color:var(--green2)}.topbar .version{background:#294236;color:#fff}.tabs{display:flex;gap:6px;overflow:auto;padding:10px clamp(12px,4vw,54px);background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.tab{border:0;background:transparent;padding:10px 15px;border-radius:9px;font-weight:750;color:var(--muted);white-space:nowrap}.tab.active{background:#e6f0ea;color:var(--green2)}main{padding:22px clamp(14px,4vw,54px) 60px}.view{display:none}.view.active{display:block}.grid.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}.card h2,.section-title h2{margin:4px 0 16px}.card-head,.section-title{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}label{display:grid;gap:7px;font-size:.86rem;font-weight:750}input,select,button,.button-like{font:inherit}input,select{width:100%;padding:11px;border:1px solid #cbd2cd;border-radius:10px;background:#fff}button,.button-like{border:1px solid #c8d0ca;border-radius:10px;padding:10px 14px;background:#fff;cursor:pointer;font-weight:750}button:hover,.button-like:hover{filter:brightness(.98)}button.primary{background:var(--green);color:#fff;border-color:var(--green)}button.ghost{background:transparent;color:#fff;border-color:#64766c}button.danger-soft{background:#f8e7e7;color:#7f2c2c;border-color:#ebc5c5}.action-row{display:flex;gap:10px}.wrap{flex-wrap:wrap}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.metric{padding:14px;border-radius:13px;background:#eef3ef}.metric strong{display:block;font-size:1.5rem}.stage-card{border-left:5px solid var(--green)}.stage-head{display:flex;justify-content:space-between;gap:12px}.stage-meta{display:flex;gap:8px;flex-wrap:wrap}.status{font-size:.76rem;font-weight:800;padding:5px 9px;border-radius:999px;background:#edf0ee}.status.completed{background:#dff0e7;color:#155c3d}.status.in-progress{background:#fff0cf;color:#775211}.status.skipped,.status.cancelled{background:#eee;color:#666}.game-grid,.player-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:13px}.game,.player-card,.projection{border:1px solid var(--line);background:#fff;border-radius:14px;padding:14px}.game .teams{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}.team-a{border-left:4px solid var(--green);padding-left:8px}.team-b{border-left:4px solid var(--gold);padding-left:8px}.score{font-size:1.35rem;font-weight:900}.projection{background:#f6f8f6}.table-scroll{overflow:auto}table{width:100%;border-collapse:collapse;min-width:900px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);font-size:.88rem}th{font-size:.76rem;letter-spacing:.04em;color:#5d6862}.tip{position:relative;cursor:help}.tip:hover:after,.tip:focus:after{content:attr(data-tip);position:absolute;z-index:10;left:0;top:26px;width:220px;background:#14211b;color:#fff;padding:9px;border-radius:8px;font-weight:500;letter-spacing:0}.delta.pos{color:#15704a;font-weight:800}.delta.neg{color:#a94141;font-weight:800}.confidence{display:flex;align-items:center;gap:6px}.confidence-bar{width:58px;height:7px;background:#e4e8e5;border-radius:99px;overflow:hidden}.confidence-bar i{display:block;height:100%;background:var(--green)}.log-row{display:grid;grid-template-columns:90px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.player-card h3{margin:0 0 4px}.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.chip{padding:5px 8px;background:#eef3ef;border-radius:999px;font-size:.75rem}.hidden{display:none!important}dialog{width:min(650px,calc(100% - 24px));border:0;border-radius:18px;padding:0;box-shadow:0 20px 80px rgba(0,0,0,.28)}dialog::backdrop{background:rgba(10,20,15,.48)}dialog form{padding:20px}.dialog-head,.dialog-actions{display:flex;justify-content:space-between;align-items:center;gap:12px}.dialog-actions{margin-top:18px;justify-content:flex-end}.icon{border:0;font-size:1.6rem;padding:4px 8px}.score-teams{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:12px;margin:18px 0}.versus{padding-bottom:12px;font-weight:900}.chem-row{display:grid;grid-template-columns:1.2fr 1fr 90px 90px;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}.empty{padding:25px;text-align:center;color:var(--muted);border:1px dashed #c7cec9;border-radius:14px}.button-like{display:inline-block}.stage-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}@media(max-width:760px){.grid.two,.form-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.topbar{align-items:flex-start}.top-actions{flex-direction:column}.chem-row{grid-template-columns:1fr 80px}.chem-row>span:nth-child(2){display:none}.log-row{grid-template-columns:1fr}.score-teams{grid-template-columns:1fr}.versus{text-align:center;padding:0}.section-title{align-items:center}}
+</style>
 </head>
 <body>
   <header class="topbar">
@@ -15,7 +17,7 @@
       <p id="headerEventDate" class="muted"></p>
     </div>
     <div class="top-actions">
-      <span class="version">v1.2</span>
+      <span class="version">v1.2.2</span>
       <button id="seedDemoBtn" class="ghost">Restore demo</button>
     </div>
   </header>
@@ -235,6 +237,228 @@
     </form>
   </dialog>
 
-  <script type="module" src="./app.js"></script>
+  <script>
+
+/* ===== store.js ===== */
+const STORAGE_KEY='pickleball-intelligence-v1-2';
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?JSON.parse(raw):null}catch{return null}}
+function saveState(state){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function clearState(){localStorage.removeItem(STORAGE_KEY)}
+function uid(prefix='id'){return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`}
+
+
+/* ===== data.js ===== */
+
+const today=new Date().toISOString().slice(0,10);
+function demoState(){
+ const players=[
+ ['Aaron',55,'Male',4.31,'Either','Control'],['Julie',42,'Female',4.18,'Right','Setup / Facilitator'],
+ ['Brad',38,'Male',4.44,'Left','Power'],['Don',51,'Male',4.22,'Either','Balanced'],
+ ['Dani',35,'Female',4.08,'Right','Counterpuncher'],['Kim',47,'Female',4.35,'Left','Balanced'],
+ ['Chris',44,'Male',4.12,'Either','Control'],['Maya',39,'Female',4.27,'Right','Power']
+ ].map((p,i)=>({id:`p${i+1}`,name:p[0],age:p[1],gender:p[2],dupr:p[3],side:p[4],style:p[5],phone:'',email:'',archived:false}));
+ const games=[
+  {id:'g1',court:1,teamA:['p1','p2'],teamB:['p3','p4'],scoreA:11,scoreB:8,competitiveness:8,chemA:8,chemB:6,status:'completed'},
+  {id:'g2',court:2,teamA:['p5','p6'],teamB:['p7','p8'],scoreA:7,scoreB:11,competitiveness:7,chemA:7,chemB:8,status:'completed'},
+  {id:'g3',court:1,teamA:['p1','p3'],teamB:['p2','p4'],scoreA:null,scoreB:null,competitiveness:null,chemA:null,chemB:null,status:'scheduled'},
+  {id:'g4',court:2,teamA:['p5','p7'],teamB:['p6','p8'],scoreA:null,scoreB:null,competitiveness:null,chemA:null,chemB:null,status:'scheduled'}
+ ];
+ return {
+  event:{id:uid('event'),name:'Tuesday Night Thunder',date:today,plannedStages:'3',customStageCount:4,courts:4,mode:'balanced',status:'active'},
+  players,
+  stages:[
+   {id:'s1',name:'Stage 1 — Calibration',format:'round-robin',status:'in-progress',games},
+   {id:'s2',name:'Stage 2 — Ranked Partnerships',format:'ranked-pairing',status:'planned',games:[]},
+   {id:'s3',name:'Stage 3 — Fixed Partners',format:'fixed-partner',status:'planned',games:[]}
+  ],
+  chemistry:{}
+ };
+}
+
+
+/* ===== engine.js ===== */
+const fmt=n=>Number(n||0).toFixed(2);
+function playerName(state,id){return state.players.find(p=>p.id===id)?.name||'Unknown'}
+function teamName(state,ids){return ids.map(id=>playerName(state,id)).join(' + ')}
+function allCompletedGames(state,stageId='all'){
+ return state.stages.flatMap(s=>(stageId==='all'||s.id===stageId)?s.games.map(g=>({...g,stageId:s.id,stageName:s.name})):[])
+  .filter(g=>g.status==='completed'&&Number.isFinite(g.scoreA)&&Number.isFinite(g.scoreB));
+}
+function standings(state,stageId='all'){
+ const rows=new Map(state.players.filter(p=>!p.archived).map(p=>[p.id,{id:p.id,name:p.name,dupr:+p.dupr,w:0,l:0,pf:0,pa:0,games:0,performance:0}]));
+ for(const g of allCompletedGames(state,stageId)){
+  const aWin=g.scoreA>g.scoreB;
+  for(const id of g.teamA){const r=rows.get(id);if(!r)continue;r.games++;r.pf+=g.scoreA;r.pa+=g.scoreB;r.w+=aWin?1:0;r.l+=aWin?0:1}
+  for(const id of g.teamB){const r=rows.get(id);if(!r)continue;r.games++;r.pf+=g.scoreB;r.pa+=g.scoreA;r.w+=aWin?0:1;r.l+=aWin?1:0}
+ }
+ const result=[...rows.values()].map(r=>{
+   const diff=r.pf-r.pa, winPct=r.games?r.w/r.games:0;
+   const session=r.games?Math.max(1,Math.min(8,r.dupr+(winPct-.5)*.34+diff/Math.max(1,r.games)*.012)):r.dupr;
+   const confidence=Math.min(95,25+r.games*15);
+   return {...r,diff,winPct,session,delta:session-r.dupr,confidence};
+ }).sort((a,b)=>b.w-a.w||b.diff-a.diff||b.pf-a.pf||b.session-a.session);
+ return result.map((r,i)=>({...r,rank:i+1}));
+}
+function stageProgress(stage){
+ const total=stage.games.length,done=stage.games.filter(g=>g.status==='completed').length;
+ return {total,done,pct:total?Math.round(done/total*100):0};
+}
+function predictedScore(state,teamA,teamB){
+ const avg=ids=>ids.reduce((s,id)=>s+(state.players.find(p=>p.id===id)?.dupr||3.5),0)/Math.max(1,ids.length);
+ const d=avg(teamA)-avg(teamB),prob=1/(1+Math.exp(-d*2.4));
+ return Math.round(prob*100);
+}
+function projection(state,stage){
+ const rows=standings(state,'all');
+ if(stage.format==='ranked-pairing'||stage.format==='resort'){
+   const teams=[];
+   for(let i=0,j=rows.length-1;i<j;i++,j--)teams.push([rows[i],rows[j]]);
+   return teams.map((t,i)=>({label:`Projected Team ${i+1}`,players:t.map(x=>x.name),basis:`Ranks ${t[0].rank} + ${t[1].rank}`}));
+ }
+ if(stage.format==='fixed-partner'){
+   const prior=[...state.stages].reverse().find(s=>s.games.some(g=>g.status==='completed'));
+   if(!prior)return[];
+   const pairs=new Map();
+   for(const g of prior.games.filter(g=>g.status==='completed'))for(const pair of [g.teamA,g.teamB]){
+      const key=[...pair].sort().join('|');pairs.set(key,(pairs.get(key)||0)+1)
+   }
+   return [...pairs.entries()].sort((a,b)=>b[1]-a[1]).map(([k],i)=>({label:`Projected Team ${i+1}`,players:k.split('|').map(id=>playerName(state,id)),basis:'Recent partnership'}));
+ }
+ return [];
+}
+function chemistryRows(state){
+ const map=new Map();
+ for(const g of allCompletedGames(state)){
+  [[g.teamA,g.chemA],[g.teamB,g.chemB]].forEach(([ids,val])=>{
+   if(!val)return;const key=[...ids].sort().join('|'),cur=map.get(key)||{sum:0,n:0};cur.sum+=+val;cur.n++;map.set(key,cur)
+  })
+ }
+ return [...map.entries()].map(([key,v])=>({ids:key.split('|'),score:v.sum/v.n,n:v.n,confidence:Math.min(95,25+v.n*20)})).sort((a,b)=>b.score-a.score);
+}
+
+
+/* ===== app.js ===== */
+
+
+
+let state=loadState()||demoState();
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+function persist(){saveState(state)}
+function formatDate(d){if(!d)return'';return new Date(`${d}T12:00:00`).toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'})}
+function activeStage(){return state.stages.find(s=>s.status==='in-progress')||state.stages.find(s=>s.status==='planned')}
+function render(){
+ persist(); renderHeader(); renderEvent(); renderStages(); renderResults(); renderPlayers(); renderChemistry(); bindDynamic();
+}
+function renderHeader(){
+ $('#headerEventName').textContent=state.event.name;$('#headerEventDate').textContent=formatDate(state.event.date);
+ $('#eventStatusBadge').textContent=state.event.status==='ended'?'Ended':'Active';
+}
+function renderEvent(){
+ $('#eventName').value=state.event.name;$('#eventDate').value=state.event.date;$('#plannedStages').value=state.event.plannedStages;
+ $('#customStagesWrap').classList.toggle('hidden',state.event.plannedStages!=='custom');$('#customStageCount').value=state.event.customStageCount||4;
+ $('#courtCount').value=state.event.courts;$('#matchmakingMode').value=state.event.mode;
+ const completed=state.stages.filter(s=>s.status==='completed').length,played=allCompletedGames(state).length,planned=state.event.plannedStages==='open'?'Open':state.event.plannedStages==='custom'?state.event.customStageCount:state.event.plannedStages;
+ $('#eventMetrics').innerHTML=`<div class="metric"><span>Planned</span><strong>${planned}</strong><small>stages</small></div><div class="metric"><span>Completed</span><strong>${completed}</strong><small>stages</small></div><div class="metric"><span>Games entered</span><strong>${played}</strong><small>counted</small></div>`;
+ const s=activeStage();
+ $('#liveBoard').innerHTML=s?stageHtml(s,true):`<div class="empty">No active or planned stage. Add another stage to continue playing.</div>`;
+}
+function stageHtml(s,compact=false){
+ const p=stageProgress(s),proj=projection(state,s);
+ const games=s.games.length?`<div class="game-grid">${s.games.map(gameHtml).join('')}</div>`:`<div class="empty">${s.status==='planned'?'This stage is projected but not generated yet. Start it to create assignments.':'No games yet.'}</div>`;
+ return `<article class="${compact?'':'card'} stage-card">
+ <div class="stage-head"><div><h3>${esc(s.name)}</h3><div class="stage-meta"><span class="status ${s.status}">${esc(s.status.replace('-',' '))}</span><span class="status">${esc(formatLabel(s.format))}</span><span class="status">${p.done}/${p.total} games</span></div></div><strong>${p.pct}%</strong></div>
+ ${games}
+ ${proj.length?`<h4>Forward look</h4><div class="game-grid">${proj.map(x=>`<div class="projection"><strong>${esc(x.label)}</strong><div>${x.players.map(esc).join(' + ')}</div><small>${esc(x.basis)}</small></div>`).join('')}</div>`:''}
+ ${compact?'':`<div class="stage-controls"><button data-stage-action="start" data-id="${s.id}">Start / generate</button><button data-stage-action="complete" data-id="${s.id}">Mark complete</button><button data-stage-action="skip" data-id="${s.id}">Skip</button><button data-stage-action="cancel" data-id="${s.id}">Cancel</button></div>`}
+ </article>`;
+}
+function gameHtml(g){
+ const scored=g.status==='completed';
+ return `<div class="game"><small>Court ${g.court}</small><div class="teams"><div class="team-a"><strong>Team A</strong><br>${esc(teamName(state,g.teamA))}</div><div class="score">${scored?`${g.scoreA}–${g.scoreB}`:'vs'}</div><div class="team-b"><strong>Team B</strong><br>${esc(teamName(state,g.teamB))}</div></div>
+ <small>Projected Team A win: ${predictedScore(state,g.teamA,g.teamB)}%</small>
+ <div class="action-row"><button data-score="${g.id}">${scored?'Edit score':'Enter score'}</button>${scored?`<button data-delete-score="${g.id}" class="danger-soft">Delete result</button>`:''}</div></div>`;
+}
+function renderStages(){$('#stageList').innerHTML=state.stages.map(s=>stageHtml(s)).join('')||'<div class="empty">No stages yet.</div>'}
+function renderResults(){
+ const sel=$('#resultsStageFilter'),old=sel.value||'all';
+ sel.innerHTML=`<option value="all">All stages</option>${state.stages.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}`;sel.value=[...sel.options].some(o=>o.value===old)?old:'all';
+ const rows=standings(state,sel.value);
+ $('#standingsBody').innerHTML=rows.map(r=>`<tr><td>${r.rank}</td><td><strong>${esc(r.name)}</strong></td><td>${fmt(r.dupr)}</td><td>${fmt(r.session)}</td><td class="delta ${r.delta>=0?'pos':'neg'}">${r.delta>=0?'+':''}${fmt(r.delta)}</td><td>${r.w}</td><td>${r.l}</td><td>${Math.round(r.winPct*100)}%</td><td>${r.pf}</td><td>${r.pa}</td><td>${r.diff>0?'+':''}${r.diff}</td><td><div class="confidence"><div class="confidence-bar"><i style="width:${r.confidence}%"></i></div>${r.confidence}%</div></td></tr>`).join('');
+ const games=allCompletedGames(state,sel.value);
+ $('#gameLog').innerHTML=games.length?games.slice().reverse().map(g=>`<div class="log-row"><strong>${esc(g.stageName)}</strong><span>${esc(teamName(state,g.teamA))} <b>${g.scoreA}–${g.scoreB}</b> ${esc(teamName(state,g.teamB))}</span><div><button data-score="${g.id}">Edit</button> <button data-delete-score="${g.id}" class="danger-soft">Delete</button></div></div>`).join(''):'<div class="empty">No recorded games for this filter.</div>';
+}
+function renderPlayers(){
+ $('#playerGrid').innerHTML=state.players.filter(p=>!p.archived).map(p=>`<article class="player-card"><h3>${esc(p.name)}</h3><p class="muted">DUPR ${fmt(p.dupr)} · Age ${p.age}</p><div class="chips"><span class="chip">${esc(p.gender||'Not specified')}</span><span class="chip">${esc(p.side)}</span><span class="chip">${esc(p.style)}</span></div><div class="action-row"><button data-edit-player="${p.id}">Edit</button><button data-archive-player="${p.id}">Archive</button></div></article>`).join('');
+}
+function renderChemistry(){
+ const filter=$('#chemistryPlayerFilter'),old=filter.value||'all';
+ filter.innerHTML=`<option value="all">All players</option>${state.players.filter(p=>!p.archived).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}`;filter.value=[...filter.options].some(o=>o.value===old)?old:'all';
+ const rows=chemistryRows(state).filter(r=>filter.value==='all'||r.ids.includes(filter.value));
+ $('#chemistryList').innerHTML=rows.length?rows.map(r=>`<div class="chem-row"><strong>${r.ids.map(id=>esc(playerName(state,id))).join(' + ')}</strong><span>${r.n} rated game${r.n===1?'':'s'}</span><span>${r.score.toFixed(1)}/10</span><span>${r.confidence}% conf.</span></div>`).join(''):'<div class="empty">Chemistry appears after scored games include partnership feedback.</div>';
+}
+function formatLabel(v){return ({'round-robin':'Round-robin calibration','ranked-pairing':'Ranked partner pairing','fixed-partner':'Fixed-partner competition','resort':'Re-sort by standings','custom':'Custom'})[v]||v}
+function bindDynamic(){
+ $$('[data-score]').forEach(b=>b.onclick=()=>openScore(b.dataset.score));
+ $$('[data-delete-score]').forEach(b=>b.onclick=()=>deleteScore(b.dataset.deleteScore));
+ $$('[data-edit-player]').forEach(b=>b.onclick=()=>openPlayer(b.dataset.editPlayer));
+ $$('[data-archive-player]').forEach(b=>b.onclick=()=>archivePlayer(b.dataset.archivePlayer));
+ $$('[data-stage-action]').forEach(b=>b.onclick=()=>stageAction(b.dataset.id,b.dataset.stageAction));
+}
+function findGame(id){for(const s of state.stages){const g=s.games.find(x=>x.id===id);if(g)return {stage:s,game:g}}}
+function openScore(id){
+ const found=findGame(id);if(!found)return;const g=found.game;
+ $('#scoreGameId').value=id;$('#scoreDialogTitle').textContent=g.status==='completed'?'Edit score':'Record score';
+ $('#scoreTeamAName').textContent=`Team A — ${teamName(state,g.teamA)}`;$('#scoreTeamBName').textContent=`Team B — ${teamName(state,g.teamB)}`;
+ $('#scoreA').value=g.scoreA??'';$('#scoreB').value=g.scoreB??'';$('#scoreCompetitive').value=g.competitiveness??7;$('#chemA').value=g.chemA??7;$('#chemB').value=g.chemB??7;syncOutputs();$('#scoreDialog').showModal();
+}
+function deleteScore(id){if(!confirm('Delete this result? Standings and ratings will recalculate.'))return;const f=findGame(id);Object.assign(f.game,{scoreA:null,scoreB:null,competitiveness:null,chemA:null,chemB:null,status:'scheduled'});render()}
+function openPlayer(id=''){
+ const p=state.players.find(x=>x.id===id);$('#playerDialogTitle').textContent=p?'Edit player':'Add player';$('#playerId').value=p?.id||'';$('#playerName').value=p?.name||'';$('#playerAge').value=p?.age||'';$('#playerGender').value=p?.gender||'';$('#playerDupr').value=p?.dupr||'';$('#playerSide').value=p?.side||'Either';$('#playerStyle').value=p?.style||'Balanced';$('#playerPhone').value=p?.phone||'';$('#playerEmail').value=p?.email||'';$('#playerDialog').showModal();
+}
+function archivePlayer(id){if(confirm('Archive this player? Their history will be preserved.')){state.players.find(p=>p.id===id).archived=true;render()}}
+function stageAction(id,action){
+ const s=state.stages.find(x=>x.id===id);if(!s)return;
+ if(action==='start'){state.stages.forEach(x=>{if(x.status==='in-progress'&&x.id!==id)x.status='planned'});s.status='in-progress';if(!s.games.length)generateGames(s)}
+ if(action==='complete')s.status='completed';
+ if(action==='skip')s.status='skipped';
+ if(action==='cancel')s.status='cancelled';
+ render();
+}
+function generateGames(stage){
+ const ids=standings(state).map(r=>r.id);
+ if(ids.length<4)return;
+ const teams=[];
+ if(stage.format==='ranked-pairing'||stage.format==='resort'){for(let i=0,j=ids.length-1;i<j;i++,j--)teams.push([ids[i],ids[j]])}
+ else {for(let i=0;i+1<ids.length;i+=2)teams.push([ids[i],ids[i+1]])}
+ const games=[];for(let i=0;i+1<teams.length;i+=2)games.push({id:uid('game'),court:(i/2)%state.event.courts+1,teamA:teams[i],teamB:teams[i+1],scoreA:null,scoreB:null,competitiveness:null,chemA:null,chemB:null,status:'scheduled'});
+ stage.games=games;
+}
+function addStage(){
+ $('#stageName').value=`Stage ${state.stages.length+1}`;$('#stageFormat').value='round-robin';$('#stageDialog').showModal();
+}
+function syncOutputs(){['scoreCompetitive','chemA','chemB'].forEach(id=>$('#'+id+'Output').value=$('#'+id).value)}
+$$('.tab').forEach(t=>t.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');$$('.view').forEach(v=>v.classList.remove('active'));$(`#view-${t.dataset.view}`).classList.add('active');render()});
+$$('[data-close]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.close).close());
+['scoreCompetitive','chemA','chemB'].forEach(id=>$('#'+id).oninput=syncOutputs);
+$('#plannedStages').onchange=()=>$('#customStagesWrap').classList.toggle('hidden',$('#plannedStages').value!=='custom');
+$('#saveEventBtn').onclick=()=>{Object.assign(state.event,{name:$('#eventName').value.trim()||'Untitled Event',date:$('#eventDate').value,plannedStages:$('#plannedStages').value,customStageCount:+$('#customStageCount').value||4,courts:+$('#courtCount').value||1,mode:$('#matchmakingMode').value});render()};
+$('#startNextStageBtn').onclick=()=>{const s=state.stages.find(x=>x.status==='planned');if(s)stageAction(s.id,'start');else addStage()};
+$('#addStageBtn').onclick=addStage;$('#addStageTopBtn').onclick=addStage;
+$('#endEventBtn').onclick=()=>{if(confirm('End this event now? Unplayed stages will not count.')){state.event.status='ended';state.stages.filter(s=>s.status==='planned'||s.status==='in-progress').forEach(s=>{if(!s.games.some(g=>g.status==='completed'))s.status='cancelled'});render()}};
+$('#stageForm').onsubmit=e=>{e.preventDefault();state.stages.push({id:uid('stage'),name:$('#stageName').value.trim(),format:$('#stageFormat').value,status:'planned',games:[]});$('#stageDialog').close();render()};
+$('#scoreForm').onsubmit=e=>{e.preventDefault();const f=findGame($('#scoreGameId').value),a=+$('#scoreA').value,b=+$('#scoreB').value;if(a===b)return alert('Pickleball games cannot end in a tie.');Object.assign(f.game,{scoreA:a,scoreB:b,competitiveness:+$('#scoreCompetitive').value,chemA:+$('#chemA').value,chemB:+$('#chemB').value,status:'completed'});$('#scoreDialog').close();render()};
+$('#playerForm').onsubmit=e=>{e.preventDefault();const id=$('#playerId').value,payload={name:$('#playerName').value.trim(),age:+$('#playerAge').value,gender:$('#playerGender').value,dupr:+$('#playerDupr').value,side:$('#playerSide').value,style:$('#playerStyle').value,phone:$('#playerPhone').value.trim(),email:$('#playerEmail').value.trim(),archived:false};if(id)Object.assign(state.players.find(p=>p.id===id),payload);else state.players.push({id:uid('player'),...payload});$('#playerDialog').close();render()};
+$('#addPlayerBtn').onclick=()=>openPlayer();
+$('#resultsStageFilter').onchange=renderResults;$('#chemistryPlayerFilter').onchange=renderChemistry;
+$('#seedDemoBtn').onclick=()=>{if(confirm('Replace current local data with the demo event?')){state=demoState();render()}};
+$('#clearDataBtn').onclick=()=>{if(confirm('Clear all local app data?')){clearState();state=demoState();render()}};
+$('#exportJsonBtn').onclick=()=>download(`pickleball-event-${state.event.date}.json`,JSON.stringify(state,null,2),'application/json');
+$('#exportCsvBtn').onclick=()=>{const rows=standings(state);const csv=['Rank,Player,DUPR,Session Rating,Delta,W,L,Win %,Points For,Points Against,Differential',...rows.map(r=>[r.rank,quote(r.name),r.dupr.toFixed(2),r.session.toFixed(2),r.delta.toFixed(2),r.w,r.l,Math.round(r.winPct*100),r.pf,r.pa,r.diff].join(','))].join('\n');download(`standings-${state.event.date}.csv`,csv,'text/csv')};
+$('#importJsonInput').onchange=async e=>{try{const parsed=JSON.parse(await e.target.files[0].text());if(!parsed.event||!parsed.players||!parsed.stages)throw Error('Invalid file');state=parsed;render()}catch(err){alert(`Import failed: ${err.message}`)}e.target.value=''};
+function quote(s){return `"${String(s).replaceAll('"','""')}"`}function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();URL.revokeObjectURL(a.href)}
+render();
+
+</script>
 </body>
 </html>
