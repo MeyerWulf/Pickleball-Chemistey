@@ -1,122 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pickleball Chemistry</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pickleball Intelligence</title><link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="hero">
-    <div>
-      <p class="eyebrow">SMART OPEN-PLAY MATCHMAKING</p>
-      <h1>Pickleball Chemistry</h1>
-      <p class="subtitle">Build balanced games using skill, partnership chemistry, fairness, and player history.</p>
-    </div>
-    <button id="resetDemo" class="ghost">Reset demo</button>
-  </header>
-
-  <main>
-    <section class="card controls">
-      <div>
-        <h2>Session setup</h2>
-        <p>Select available players, choose the number of courts, then generate the best matchups.</p>
-      </div>
-      <div class="control-row">
-        <label>Courts
-          <select id="courtCount">
-            <option value="1">1</option>
-            <option value="2" selected>2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-          </select>
-        </label>
-        <button id="generateBtn" class="primary">Generate matchups</button>
-      </div>
-    </section>
-
-    <section class="grid two-col">
-      <section class="card">
-        <div class="section-head">
-          <div>
-            <h2>Players</h2>
-            <p>Skill uses a 1.0–5.0 scale. Chemistry begins neutral and learns from feedback.</p>
-          </div>
-          <button id="openAddPlayer" class="secondary">+ Add player</button>
-        </div>
-        <div id="playerList" class="player-list"></div>
-      </section>
-
-      <section class="card">
-        <div class="section-head">
-          <div>
-            <h2>Session snapshot</h2>
-            <p>Fairness is driven by games played and recent court assignments.</p>
-          </div>
-        </div>
-        <div id="snapshot" class="stats-grid"></div>
-        <div class="legend">
-          <span><i class="dot good"></i> strong chemistry</span>
-          <span><i class="dot neutral"></i> neutral</span>
-          <span><i class="dot weak"></i> weak chemistry</span>
-        </div>
-      </section>
-    </section>
-
-    <section class="card">
-      <div class="section-head">
-        <div>
-          <h2>Generated courts</h2>
-          <p>Team strength combines skill and learned partner chemistry. Lower balance gaps are better.</p>
-        </div>
-      </div>
-      <div id="courts" class="courts empty-state">No matchups generated yet.</div>
-    </section>
-
-    <section class="card">
-      <div class="section-head">
-        <div>
-          <h2>Chemistry matrix</h2>
-          <p>Values are learned from post-match partner ratings. Neutral is 5.0.</p>
-        </div>
-      </div>
-      <div id="chemistryMatrix" class="matrix-wrap"></div>
-    </section>
-  </main>
-
-  <dialog id="playerDialog">
-    <form method="dialog" id="playerForm" class="dialog-form">
-      <h2>Add player</h2>
-      <label>Name<input id="playerName" required maxlength="30" /></label>
-      <label>Skill rating<input id="playerRating" type="number" min="1" max="5" step="0.1" value="3.5" required /></label>
-      <div class="dialog-actions">
-        <button value="cancel" class="ghost">Cancel</button>
-        <button id="savePlayer" value="default" class="primary">Save</button>
-      </div>
-    </form>
-  </dialog>
-
-  <dialog id="resultDialog">
-    <form method="dialog" id="resultForm" class="dialog-form wide">
-      <h2>Record result</h2>
-      <div id="resultSummary"></div>
-      <div class="score-row">
-        <label>Team A score<input id="scoreA" type="number" min="0" max="99" value="11" /></label>
-        <label>Team B score<input id="scoreB" type="number" min="0" max="99" value="8" /></label>
-      </div>
-      <h3>Partner chemistry feedback</h3>
-      <p class="muted">Rate how well each partnership functioned in this match.</p>
-      <div class="score-row">
-        <label>Team A chemistry<input id="chemA" type="range" min="1" max="10" value="5" /><output id="chemAOut">5</output></label>
-        <label>Team B chemistry<input id="chemB" type="range" min="1" max="10" value="5" /><output id="chemBOut">5</output></label>
-      </div>
-      <div class="dialog-actions">
-        <button value="cancel" class="ghost">Cancel</button>
-        <button id="saveResult" value="default" class="primary">Save result</button>
-      </div>
-    </form>
-  </dialog>
-
-  <script src="app.js"></script>
-</body>
-</html>
+<header><div><small>PICKLEBALL INTELLIGENCE</small><h1>Better matches. Better chemistry.</h1></div><button id="addBtn">+ Add player</button></header>
+<nav>
+<button class="tab active" data-view="session">Session</button><button class="tab" data-view="players">Players</button><button class="tab" data-view="chemistry">Chemistry</button><button class="tab" data-view="data">Data</button>
+</nav>
+<main>
+<section id="session" class="view active">
+<div class="grid"><article><div class="head"><div><small>TONIGHT</small><h2>Session setup</h2></div><span id="activeCount" class="pill"></span></div>
+<div class="fields"><label>Courts<select id="courts"></select></label><label>Matchmaking mode<select id="mode"><option value="balanced">Balanced + variety</option><option value="competitive">Most competitive</option><option value="discover">Discover chemistry</option><option value="social">Social rotation</option></select></label></div>
+<div id="sessionPlayers" class="checklist"></div><div class="actions"><button class="secondary" id="selectAll">Select all active</button><button id="generate">Generate matches</button></div></article>
+<article><div class="head"><div><small>DECISION SUPPORT</small><h2>Session health</h2></div><b id="grade" class="grade">—</b></div><div id="health" class="muted">Generate matches to score this session.</div></article></div>
+<div id="matches" class="matches"></div></section>
+<section id="players" class="view"><article><div class="head"><div><small>ROSTER</small><h2>Player profiles</h2></div><label class="inline"><input id="showArchived" type="checkbox"> Show archived</label></div><input id="search" placeholder="Search players…"><div id="playerCards" class="cards"></div></article></section>
+<section id="chemistry" class="view"><article><small>PARTNERSHIP INTELLIGENCE</small><h2>Chemistry profile</h2><div class="fields"><label>Player one<select id="chemA"></select></label><label>Player two<select id="chemB"></select></label></div><div id="chemPanel" class="muted">Choose two players.</div></article></section>
+<section id="data" class="view"><div class="grid"><article><small>IMPORT</small><h2>CSV roster</h2><p class="muted">Required columns: name and age. Optional: rating, handedness, gender, side, style, club, email, phone, duprId and notes.</p><input id="csv" type="file" accept=".csv"><div id="preview"></div></article><article><small>BACKUP</small><h2>Export</h2><p class="muted">Download the roster and history.</p><div class="actions"><button id="exportJson">JSON backup</button><button id="exportCsv" class="secondary">CSV roster</button></div><hr><button id="reset" class="danger">Reset demo data</button></article></div></section>
+</main>
+<dialog id="playerDialog"><form id="playerForm"><div class="head"><h2 id="formTitle">Add player</h2><button type="button" class="close" data-close>×</button></div><input type="hidden" id="pid"><div class="fields">
+<label class="wide">Name *<input id="name" required></label><label>Age *<input id="age" type="number" min="8" max="100" required></label><label>External/DUPR rating<input id="rating" type="number" min="1" max="8" step=".01" value="3.50"></label>
+<label>Handedness<select id="handedness"><option>Right</option><option>Left</option><option>Ambidextrous</option></select></label><label>Gender (optional)<select id="gender"><option value="">Prefer not to say</option><option>Woman</option><option>Man</option><option>Nonbinary</option><option>Other</option></select></label>
+<label>Preferred side<select id="side"><option>Either</option><option>Left</option><option>Right</option></select></label><label>Play style<select id="style"><option>Balanced</option><option>Aggressive</option><option>Defensive / reset-oriented</option><option>Speed-up heavy</option><option>Power-oriented</option></select></label>
+<label>Home club<input id="club"></label><label>Email<input id="email" type="email"></label><label>Phone<input id="phone" type="tel"></label><label>DUPR profile ID or URL<input id="duprId"></label><label class="wide">Notes<textarea id="notes"></textarea></label></div>
+<label class="consent"><input id="consent" type="checkbox"> Player consented to storage of profile/contact information.</label><p class="fine">Never enter a DUPR password here. A production connection must use DUPR-authorized authentication and a formal privacy policy.</p><div class="actions end"><button type="button" class="secondary" data-close>Cancel</button><button>Save player</button></div></form></dialog>
+<dialog id="resultDialog"><form id="resultForm"><div class="head"><h2>Record result</h2><button type="button" class="close" data-result-close>×</button></div><input id="matchId" type="hidden"><div id="resultTeams"></div><div class="fields"><label>Team A score<input id="scoreA" type="number" min="0" max="30" required></label><label>Team B score<input id="scoreB" type="number" min="0" max="30" required></label></div><h3>Partnership feedback</h3><p class="muted">Optional 1–10 ratings. Actual outcomes remain the stronger signal.</p><div id="ratingInputs"></div><div class="actions end"><button type="button" class="secondary" data-result-close>Cancel</button><button>Save result</button></div></form></dialog>
+<div id="toast"></div><script src="app.js"></script>
+</body></html>

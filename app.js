@@ -1,200 +1,25 @@
-const STORAGE_KEY = 'pickleball-chemistry-v1';
-
-const demoPlayers = [
-  ['Aaron', 4.3], ['Donna', 3.7], ['Bryan', 4.1], ['Mia', 3.5],
-  ['Jared', 4.0], ['Nicolette', 3.6], ['Sam', 4.4], ['Taylor', 3.8],
-  ['Chris', 3.9], ['Jordan', 4.2], ['Alex', 3.4], ['Riley', 3.7]
-].map((p, i) => ({ id: crypto.randomUUID(), name: p[0], rating: p[1], active: i < 8, games: 0, wins: 0 }));
-
-let state = loadState();
-let currentCourts = [];
-let selectedCourtIndex = null;
-
-function defaultState() {
-  return { players: demoPlayers, chemistry: {}, history: [] };
-}
-
-function loadState() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultState(); }
-  catch { return defaultState(); }
-}
-
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-function pairKey(a, b) { return [a, b].sort().join('|'); }
-function chemistry(a, b) { return state.chemistry[pairKey(a, b)]?.value ?? 5; }
-function updateChemistry(a, b, score) {
-  const key = pairKey(a, b);
-  const old = state.chemistry[key] || { value: 5, samples: 0 };
-  const alpha = Math.min(0.45, 1 / (old.samples + 1));
-  state.chemistry[key] = {
-    value: +(old.value * (1 - alpha) + score * alpha).toFixed(2),
-    samples: old.samples + 1
-  };
-}
-
-function effectiveTeamStrength(a, b) {
-  const chemBoost = (chemistry(a.id, b.id) - 5) * 0.12;
-  return a.rating + b.rating + chemBoost;
-}
-
-function expectedWin(sa, sb) { return 1 / (1 + Math.pow(10, (sb - sa) / 1.6)); }
-
-function render() {
-  renderPlayers();
-  renderSnapshot();
-  renderCourts();
-  renderMatrix();
-}
-
-function renderPlayers() {
-  const root = document.getElementById('playerList');
-  root.innerHTML = '';
-  [...state.players].sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
-    const row = document.createElement('div');
-    row.className = 'player-row';
-    row.innerHTML = `
-      <div class="player-main">
-        <input type="checkbox" ${p.active ? 'checked' : ''} aria-label="Select ${p.name}">
-        <div><div class="player-name">${escapeHtml(p.name)}</div><div class="player-meta">${p.games} games · ${p.wins} wins</div></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px"><span class="rating-pill">${p.rating.toFixed(1)}</span><button class="remove" title="Remove">×</button></div>`;
-    row.querySelector('input').addEventListener('change', e => { p.active = e.target.checked; saveState(); renderSnapshot(); });
-    row.querySelector('.remove').addEventListener('click', () => {
-      if (confirm(`Remove ${p.name}?`)) { state.players = state.players.filter(x => x.id !== p.id); saveState(); render(); }
-    });
-    root.appendChild(row);
-  });
-}
-
-function renderSnapshot() {
-  const active = state.players.filter(p => p.active);
-  const avg = active.length ? active.reduce((s,p)=>s+p.rating,0)/active.length : 0;
-  const games = state.history.length;
-  const pairs = Object.values(state.chemistry).filter(x => x.samples > 0).length;
-  document.getElementById('snapshot').innerHTML = `
-    <div class="stat"><strong>${active.length}</strong><span>active players</span></div>
-    <div class="stat"><strong>${avg.toFixed(2)}</strong><span>average skill</span></div>
-    <div class="stat"><strong>${games}</strong><span>recorded games</span></div>
-    <div class="stat"><strong>${pairs}</strong><span>learned partnerships</span></div>`;
-}
-
-function chooseSessionPlayers(active, spots) {
-  return [...active]
-    .sort((a,b) => a.games - b.games || Math.random() - .5)
-    .slice(0, spots);
-}
-
-function pairingOptions(group) {
-  const [a,b,c,d] = group;
-  return [
-    [[a,b],[c,d]], [[a,c],[b,d]], [[a,d],[b,c]]
-  ].map(([ta,tb]) => {
-    const sa = effectiveTeamStrength(...ta), sb = effectiveTeamStrength(...tb);
-    const repeatPenalty = recentPairPenalty(ta) + recentPairPenalty(tb);
-    const chemAverage = (chemistry(ta[0].id, ta[1].id) + chemistry(tb[0].id, tb[1].id))/2;
-    const score = Math.abs(sa-sb) + repeatPenalty - (chemAverage-5)*0.03;
-    return { teamA: ta, teamB: tb, strengthA: sa, strengthB: sb, gap: Math.abs(sa-sb), score };
-  }).sort((x,y)=>x.score-y.score);
-}
-
-function recentPairPenalty(team) {
-  const key = pairKey(team[0].id, team[1].id);
-  return state.history.slice(-8).filter(g => g.pairs.includes(key)).length * .18;
-}
-
-function generateCourts() {
-  const active = state.players.filter(p => p.active);
-  const requested = Number(document.getElementById('courtCount').value);
-  const courts = Math.min(requested, Math.floor(active.length / 4));
-  if (!courts) { alert('Select at least four active players.'); return; }
-
-  const selected = chooseSessionPlayers(active, courts * 4);
-  selected.sort((a,b) => b.rating-a.rating);
-  const groups = Array.from({length:courts}, ()=>[]);
-  selected.forEach((p,i) => groups[i % courts].push(p));
-  currentCourts = groups.map((g, i) => ({ court: i+1, ...pairingOptions(g)[0] }));
-  renderCourts();
-}
-
-function renderCourts() {
-  const root = document.getElementById('courts');
-  if (!currentCourts.length) { root.className = 'courts empty-state'; root.textContent='No matchups generated yet.'; return; }
-  root.className = 'courts'; root.innerHTML='';
-  currentCourts.forEach((m, i) => {
-    const winA = expectedWin(m.strengthA, m.strengthB);
-    const el = document.createElement('article'); el.className='court-card';
-    el.innerHTML = `
-      <div class="court-head"><strong>Court ${m.court}</strong><span class="balance">Balance gap ${m.gap.toFixed(2)}</span></div>
-      <div class="court-body">
-        <div class="team"><div><div class="team-names">${m.teamA.map(p=>escapeHtml(p.name)).join(' + ')}</div><div class="team-score">Chemistry ${chemistry(m.teamA[0].id,m.teamA[1].id).toFixed(1)}</div></div><strong>${Math.round(winA*100)}%</strong></div>
-        <div class="vs">VS</div>
-        <div class="team"><div><div class="team-names">${m.teamB.map(p=>escapeHtml(p.name)).join(' + ')}</div><div class="team-score">Chemistry ${chemistry(m.teamB[0].id,m.teamB[1].id).toFixed(1)}</div></div><strong>${Math.round((1-winA)*100)}%</strong></div>
-        <button class="primary record-btn">Record result</button>
-      </div>`;
-    el.querySelector('.record-btn').addEventListener('click', ()=>openResult(i));
-    root.appendChild(el);
-  });
-}
-
-function renderMatrix() {
-  const players = state.players.filter(p=>p.active).slice(0,12);
-  const root = document.getElementById('chemistryMatrix');
-  if (!players.length) { root.innerHTML='<p class="muted">No active players.</p>'; return; }
-  let html='<table><thead><tr><th>Player</th>'+players.map(p=>`<th>${escapeHtml(p.name)}</th>`).join('')+'</tr></thead><tbody>';
-  for (const a of players) {
-    html += `<tr><td>${escapeHtml(a.name)}</td>`;
-    for (const b of players) {
-      if (a.id===b.id) html += '<td>—</td>';
-      else {
-        const v=chemistry(a.id,b.id); const cls=v>=6?'chem-high':v<=4?'chem-low':'chem-mid';
-        html += `<td class="${cls}">${v.toFixed(1)}</td>`;
-      }
-    }
-    html += '</tr>';
-  }
-  root.innerHTML=html+'</tbody></table>';
-}
-
-function openResult(index) {
-  selectedCourtIndex=index;
-  const m=currentCourts[index];
-  document.getElementById('resultSummary').innerHTML=`<p><strong>Team A:</strong> ${m.teamA.map(p=>escapeHtml(p.name)).join(' + ')}</p><p><strong>Team B:</strong> ${m.teamB.map(p=>escapeHtml(p.name)).join(' + ')}</p>`;
-  document.getElementById('resultDialog').showModal();
-}
-
-function saveResult() {
-  const m=currentCourts[selectedCourtIndex];
-  const scoreA=+document.getElementById('scoreA').value, scoreB=+document.getElementById('scoreB').value;
-  const chemA=+document.getElementById('chemA').value, chemB=+document.getElementById('chemB').value;
-  const winner = scoreA===scoreB ? null : (scoreA>scoreB ? 'A':'B');
-  [...m.teamA,...m.teamB].forEach(p=>p.games++);
-  if (winner==='A') m.teamA.forEach(p=>p.wins++);
-  if (winner==='B') m.teamB.forEach(p=>p.wins++);
-  updateChemistry(m.teamA[0].id,m.teamA[1].id,chemA);
-  updateChemistry(m.teamB[0].id,m.teamB[1].id,chemB);
-  state.history.push({ date:new Date().toISOString(), scoreA, scoreB, players:[...m.teamA,...m.teamB].map(p=>p.id), pairs:[pairKey(m.teamA[0].id,m.teamA[1].id),pairKey(m.teamB[0].id,m.teamB[1].id)] });
-  saveState();
-  currentCourts.splice(selectedCourtIndex,1);
-  render();
-}
-
-function escapeHtml(s) { return s.replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
-
-document.getElementById('generateBtn').addEventListener('click', generateCourts);
-document.getElementById('openAddPlayer').addEventListener('click', ()=>document.getElementById('playerDialog').showModal());
-document.getElementById('savePlayer').addEventListener('click', e=>{
-  e.preventDefault();
-  const name=document.getElementById('playerName').value.trim();
-  const rating=+document.getElementById('playerRating').value;
-  if (!name || rating<1 || rating>5) return;
-  state.players.push({id:crypto.randomUUID(),name,rating,active:true,games:0,wins:0});
-  saveState(); document.getElementById('playerDialog').close(); document.getElementById('playerForm').reset(); render();
-});
-document.getElementById('saveResult').addEventListener('click', e=>{ e.preventDefault(); saveResult(); document.getElementById('resultDialog').close(); });
-['chemA','chemB'].forEach(id=>document.getElementById(id).addEventListener('input', e=>document.getElementById(id+'Out').value=e.target.value));
-document.getElementById('resetDemo').addEventListener('click', ()=>{ if(confirm('Reset all local data?')) { localStorage.removeItem(STORAGE_KEY); location.reload(); } });
-
-render();
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],KEY='pbi-v1';const uid=()=>crypto.randomUUID?.()||Date.now()+Math.random();const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;const pk=(a,b)=>[a,b].sort().join('|');
+const demo=[['Aaron',55,4.31,'Right','Right','Aggressive'],['Julie',48,4.12,'Left','Left','Defensive / reset-oriented'],['Steve',42,4.44,'Right','Left','Power-oriented'],['Maya',37,3.98,'Right','Either','Balanced'],['Chris',61,4.05,'Right','Right','Defensive / reset-oriented'],['Dana',52,3.88,'Left','Left','Speed-up heavy'],['Luis',29,4.22,'Right','Either','Balanced'],['Kim',45,3.81,'Right','Right','Aggressive']].map((x,i)=>({id:uid(),name:x[0],age:x[1],rating:x[2],internal:x[2]+((i%3)-1)*.03,session:x[2],rd:.3,handedness:x[3],gender:'',side:x[4],style:x[5],club:'The Flying Pickle',email:'',phone:'',duprId:'',notes:'',consent:false,archived:false,active:true,wins:0,losses:0,games:0}));
+let state=(()=>{try{return JSON.parse(localStorage.getItem(KEY))||{players:demo,chem:{},history:[],round:0}}catch{return{players:demo,chem:{},history:[],round:0}}})();let matches=[];const save=()=>localStorage.setItem(KEY,JSON.stringify(state));const P=id=>state.players.find(p=>p.id===id);const active=()=>state.players.filter(p=>!p.archived);const C=(a,b)=>state.chem[pk(a,b)]||{games:0,wins:0,communication:7,coverage:7,transition:7,finishing:7,consistency:7,enjoyment:7,effect:0};const co=c=>avg([c.communication,c.coverage,c.transition,c.finishing,c.consistency,c.enjoyment]);const conf=c=>Math.round(100*(1-Math.exp(-c.games/14)));const toast=t=>{let e=$('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2000)};
+for(let i=1;i<=25;i++)$('#courts').insertAdjacentHTML('beforeend',`<option>${i}</option>`);$('#courts').value=2;$$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));$$('.view').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('#'+b.dataset.view).classList.add('active');render()});
+function error(v,lo,hi,min=1,max=8,d=2){let p=x=>100*(x-min)/(max-min);return `<div class="error"><span class="line" style="left:${p(lo)}%;width:${p(hi)-p(lo)}%"></span><span class="cap" style="left:${p(lo)}%"></span><span class="cap" style="left:${p(hi)}%"></span><span class="dot" style="left:${p(v)}%"></span></div><div class="labels"><span>${lo.toFixed(d)}</span><span>${v.toFixed(d)}</span><span>${hi.toFixed(d)}</span></div>`}
+function render(){renderSession();renderPlayers();renderSelects();renderChem()}
+function renderSession(){let ps=active();$('#activeCount').textContent=ps.filter(p=>p.active).length+' active';$('#sessionPlayers').innerHTML=ps.map(p=>`<label class="check"><input type="checkbox" data-sel="${p.id}" ${p.active?'checked':''}><span><b>${p.name}</b><small>${p.internal.toFixed(2)} internal · ${p.style}</small></span></label>`).join('');$$('[data-sel]').forEach(x=>x.onchange=()=>{P(x.dataset.sel).active=x.checked;save();renderSession()})}
+$('#selectAll').onclick=()=>{active().forEach(p=>p.active=true);save();renderSession()};
+function strength(a,b){let c=C(a.id,b.id),bonus=(a.side!=='Either'&&b.side!=='Either'&&a.side!==b.side)?.08:0;if((a.style.includes('Aggressive')&&b.style.includes('reset'))||(b.style.includes('Aggressive')&&a.style.includes('reset')))bonus+=.06;return a.session+b.session+c.effect*conf(c)/100+bonus}function expected(a,b){return 1/(1+10**((b-a)/1.2))}
+function score(arr,mode){let [a,b,c,d]=arr,pr=expected(strength(a,b),strength(c,d)),bal=1-Math.abs(.5-pr)*2,nov=1-clamp(avg([C(a.id,b.id).games,C(c.id,d.id).games])/12,0,1),ch=avg([co(C(a.id,b.id)),co(C(c.id,d.id))])/10;if(mode==='competitive')return bal*.8+ch*.15+nov*.05;if(mode==='discover')return bal*.45+nov*.45+ch*.1;if(mode==='social')return bal*.35+nov*.55+.1;return bal*.6+nov*.25+ch*.15}
+function best(pool,mode){let out;for(let t=0;t<130;t++){let q=[...pool].sort(()=>Math.random()-.5).slice(0,4),opts=[[q[0],q[1],q[2],q[3]],[q[0],q[2],q[1],q[3]],[q[0],q[3],q[1],q[2]]];for(let a of opts){let s=score(a,mode);if(!out||s>out.s)out={a,s}}}return out}
+$('#generate').onclick=()=>{let pool=active().filter(p=>p.active),n=Math.min(+$('select#courts').value,Math.floor(pool.length/4));if(!n)return toast('Select at least four players.');matches=[];for(let i=0;i<n;i++){let z=best(pool,$('#mode').value),[a,b,c,d]=z.a,pr=expected(strength(a,b),strength(c,d));matches.push({id:uid(),court:i+1,A:[a.id,b.id],B:[c.id,d.id],pr,s:z.s});let used=new Set(z.a.map(x=>x.id));pool=pool.filter(x=>!used.has(x.id))}state.round++;save();renderMatches();renderHealth()};
+function renderMatches(){$('#matches').innerHTML=matches.map(m=>{let A=m.A.map(P),B=m.B.map(P),u=clamp(.06+avg([...A,...B].map(p=>p.rd))/8,.06,.18),lo=clamp(m.pr-u,0,1),hi=clamp(m.pr+u,0,1);return `<div class="match"><div class="head"><h3>Court ${m.court}</h3><span class="pill">Round ${state.round}</span></div><div class="teams"><div class="team"><b>${A.map(x=>x.name).join(' + ')}</b><small>${strength(...A).toFixed(2)} team</small></div><b>VS</b><div class="team"><b>${B.map(x=>x.name).join(' + ')}</b><small>${strength(...B).toFixed(2)} team</small></div></div><p>Team A predicted win chance: <b>${Math.round(m.pr*100)}%</b></p>${error(m.pr,lo,hi,0,1,2)}<div class="actions"><button data-result="${m.id}">Record result</button><button class="secondary" data-why="${m.id}">Why?</button></div></div>`}).join('');$$('[data-result]').forEach(b=>b.onclick=()=>openResult(b.dataset.result));$$('[data-why]').forEach(b=>b.onclick=()=>{let m=matches.find(x=>x.id==b.dataset.why);alert(`Why this matchup?\n\nPredicted balance: ${Math.round(m.pr*100)}% vs ${100-Math.round(m.pr*100)}%.\nThe model combines internal skill, today's session estimate, partnership history, complementary sides, style fit and the selected variety setting.`)})}
+function renderHealth(){let bal=Math.round(avg(matches.map(m=>1-Math.abs(.5-m.pr)*2))*100);let noveltyValues=matches.flatMap(m=>[C(...m.A).games,C(...m.B).games]).map(n=>100*(1-clamp(n/15,0,1)));let nov=Math.round(avg(noveltyValues));let q=Math.round(avg(matches.map(m=>m.s))*100);let g=q>=90?'A+':q>=84?'A':q>=76?'B':q>=66?'C':'D';$('#grade').textContent=g;$('#health').innerHTML=[['Competitive balance',bal],['Partner variety',nov],['Overall quality',q]].map(x=>`<div class="healthrow"><b>${x[0]}</b> <span>${x[1]}%</span><div class="meter"><span style="width:${x[1]}%"></span></div></div>`).join('')}
+function renderPlayers(){let q=$('#search').value.toLowerCase(),show=$('#showArchived').checked,ps=state.players.filter(p=>(show||!p.archived)&&p.name.toLowerCase().includes(q));$('#playerCards').innerHTML=ps.map(p=>{let lo=clamp(p.internal-p.rd,1,8),hi=clamp(p.internal+p.rd,1,8),wp=p.games?Math.round(100*p.wins/p.games):0;return `<div class="match ${p.archived?'archived':''}"><div class="head"><div><h3>${p.name}</h3><span class="muted">Age ${p.age} · ${p.handedness} · ${p.club||'No club'}</span></div><span class="pill">${p.archived?'Archived':'Active'}</span></div><div class="stats"><div class="stat"><b>${p.internal.toFixed(2)}</b><small>Internal</small></div><div class="stat"><b>${p.session.toFixed(2)}</b><small>Session</small></div><div class="stat"><b>${wp}%</b><small>Win rate</small></div></div><small>Internal rating error bars</small>${error(p.internal,lo,hi)}<p><span class="tag">${p.side} side</span><span class="tag">${p.style}</span><span class="tag">${p.games} games</span></p><div class="actions"><button class="secondary" data-edit="${p.id}">Edit</button><button class="${p.archived?'':'danger'}" data-archive="${p.id}">${p.archived?'Restore':'Archive'}</button></div></div>`}).join('');$$('[data-edit]').forEach(b=>b.onclick=()=>openPlayer(b.dataset.edit));$$('[data-archive]').forEach(b=>b.onclick=()=>{let p=P(b.dataset.archive);p.archived=!p.archived;p.active=!p.archived;save();render();toast(p.archived?'Player archived':'Player restored')})}
+$('#search').oninput=renderPlayers;$('#showArchived').onchange=renderPlayers;
+function renderSelects(){let o=active().map(p=>`<option value="${p.id}">${p.name}</option>`).join('');['chemA','chemB'].forEach(id=>{let e=$('#'+id),v=e.value;e.innerHTML='<option value="">Choose…</option>'+o;if([...e.options].some(x=>x.value===v))e.value=v})}
+function renderChem(){let a=$('#chemA').value,b=$('#chemB').value;if(!a||!b||a===b)return $('#chemPanel').innerHTML='Choose two different players.';let A=P(a),B=P(b),c=C(a,b),o=co(c),cf=conf(c),half=clamp(2.2*(1-cf/100)+.25,.25,2.4),lo=clamp(o-half,1,10),hi=clamp(o+half,1,10),rows=[['Communication','communication'],['Court coverage','coverage'],['Transition game','transition'],['Finishing','finishing'],['Consistency','consistency'],['Enjoyment','enjoyment']],why=[];if(A.side!=='Either'&&B.side!=='Either'&&A.side!==B.side)why.push('Their preferred court sides complement each other.');if((A.style.includes('Aggressive')&&B.style.includes('reset'))||(B.style.includes('Aggressive')&&A.style.includes('reset')))why.push('An attacking player is paired with a reset-oriented stabilizer.');why.push(c.games<5?'Low sample: the error bars remain wide.':`Based on ${c.games} recorded games together.`);$('#chemPanel').innerHTML=`<div class="head"><div><h2>${A.name} + ${B.name}</h2><p class="muted">${c.games} games · ${cf}% confidence</p></div><div class="big">${o.toFixed(1)}</div></div><small>Overall chemistry error bars</small>${error(o,lo,hi,1,10,1)}${rows.map(r=>`<div class="chemrow"><b>${r[0]}</b><div class="bar"><span style="width:${c[r[1]]*10}%"></span></div><strong>${c[r[1]].toFixed(1)}</strong></div>`).join('')}<div class="why"><b>Why?</b><ul>${why.map(x=>`<li>${x}</li>`).join('')}</ul></div>`}
+$('#chemA').onchange=renderChem;$('#chemB').onchange=renderChem;
+$('#addBtn').onclick=()=>openPlayer();function openPlayer(id){let p=id?P(id):{id:'',name:'',age:'',rating:3.5,handedness:'Right',gender:'',side:'Either',style:'Balanced',club:'',email:'',phone:'',duprId:'',notes:'',consent:false};$('#formTitle').textContent=id?'Edit player':'Add player';for(let k of ['id','name','age','rating','handedness','gender','side','style','club','email','phone','duprId','notes','consent']){let e=$('#'+(k==='id'?'pid':k));e.type==='checkbox'?e.checked=!!p[k]:e.value=p[k]??''}$('#playerDialog').showModal()}function closePlayer(){$('#playerDialog').close()}$$('[data-close]').forEach(b=>b.onclick=closePlayer);$('#playerDialog').onclick=e=>{if(e.target===$('#playerDialog'))closePlayer()};
+$('#playerForm').onsubmit=e=>{e.preventDefault();let id=$('#pid').value,old=id?P(id):null,r=+$('#rating').value||3.5,p={...(old||{}),id:id||uid(),name:$('#name').value.trim(),age:+$('#age').value,rating:r,internal:old?.internal??r,session:old?.session??r,rd:old?.rd??.5,handedness:$('#handedness').value,gender:$('#gender').value,side:$('#side').value,style:$('#style').value,club:$('#club').value,email:$('#email').value,phone:$('#phone').value,duprId:$('#duprId').value,notes:$('#notes').value,consent:$('#consent').checked,archived:old?.archived??false,active:old?.active??true,wins:old?.wins??0,losses:old?.losses??0,games:old?.games??0};if(old)Object.assign(old,p);else state.players.push(p);save();closePlayer();render();toast(old?'Player updated':'Player added')};
+const metrics=[['Communication','communication'],['Court coverage','coverage'],['Transition game','transition'],['Finishing','finishing'],['Consistency','consistency'],['Enjoyment','enjoyment']];$('#ratingInputs').innerHTML=metrics.map((x,i)=>`<label class="slider">${x[0]}<input id="f-${x[1]}" type="range" min="1" max="10" value="${i===5?8:7}"><output>${i===5?8:7}</output></label>`).join('');$$('#ratingInputs input').forEach(x=>x.oninput=()=>x.nextElementSibling.value=x.value);function openResult(id){let m=matches.find(x=>x.id==id);$('#matchId').value=id;$('#resultTeams').innerHTML=`<b>${m.A.map(P).map(x=>x.name).join(' + ')}</b> vs <b>${m.B.map(P).map(x=>x.name).join(' + ')}</b>`;$('#scoreA').value='';$('#scoreB').value='';$('#resultDialog').showModal()}$$('[data-result-close]').forEach(b=>b.onclick=()=>$('#resultDialog').close());
+$('#resultForm').onsubmit=e=>{e.preventDefault();let m=matches.find(x=>x.id==$('#matchId').value),sa=+$('#scoreA').value,sb=+$('#scoreB').value;if(sa===sb)return toast('A match cannot end tied.');let aw=sa>sb,k=.1;[...m.A.map(P),...m.B.map(P)].forEach((p,i)=>{let won=i<2?aw:!aw,ex=i<2?m.pr:1-m.pr;p.games++;won?p.wins++:p.losses++;p.internal=clamp(p.internal+k*((won?1:0)-ex),1,8);p.session=clamp(p.session+.16*((won?1:0)-ex),1,8);p.rd=clamp(p.rd*.94,.06,.6)});for(let [ids,won] of [[m.A,aw],[m.B,!aw]]){let old=C(...ids),n=old.games,u={...old,games:n+1,wins:old.wins+(won?1:0)};for(let [_,key] of metrics){let v=+$('#f-'+key).value;u[key]=old[key]+(v-old[key])/(n+1)}u.effect=clamp(old.effect*.9+((won?1:0)-.5)*.08,-.5,.5);state.chem[pk(...ids)]=u}state.history.push({...m,scoreA:sa,scoreB:sb,date:new Date().toISOString()});matches=matches.filter(x=>x.id!==m.id);save();$('#resultDialog').close();render();renderMatches();renderHealth();toast('Result recorded')};
+function dl(name,text,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();URL.revokeObjectURL(a.href)}$('#exportJson').onclick=()=>dl('pickleball-intelligence-backup.json',JSON.stringify(state,null,2),'application/json');$('#exportCsv').onclick=()=>{let h=['name','age','rating','internal','handedness','gender','side','style','club','email','phone','duprId','wins','losses','games','archived'],r=state.players.map(p=>h.map(k=>`"${String(p[k]??'').replaceAll('"','""')}"`).join(','));dl('pickleball-roster.csv',[h.join(','),...r].join('\n'),'text/csv')};
+$('#csv').onchange=async e=>{let f=e.target.files[0];if(!f)return;let t=await f.text(),lines=t.trim().split(/\r?\n/),h=parse(lines.shift()).map(x=>x.toLowerCase().trim()),rows=lines.map(l=>{let v=parse(l),o={};h.forEach((x,i)=>o[x]=v[i]||'');return o}).filter(x=>x.name||x.player);$('#preview').innerHTML=`<p><b>${rows.length}</b> players detected.</p><button id="confirm">Import valid rows</button>`;$('#confirm').onclick=()=>{let n=0;for(let r of rows){let name=r.name||r.player,age=+r.age;if(!name||!age)continue;let rt=+(r.rating||r.dupr||3.5);state.players.push({id:uid(),name,age,rating:rt,internal:rt,session:rt,rd:.5,handedness:r.handedness||r.hand||'Right',gender:r.gender||'',side:r.side||'Either',style:r.style||'Balanced',club:r.club||'',email:r.email||'',phone:r.phone||'',duprId:r.duprid||r['dupr id']||'',notes:r.notes||'',consent:false,archived:false,active:true,wins:0,losses:0,games:0});n++}save();render();$('#preview').innerHTML='';toast(n+' players imported')}};function parse(s){let o=[],c='',q=false;for(let i=0;i<s.length;i++){let x=s[i];if(x==='"'&&s[i+1]==='"'){c+='"';i++}else if(x==='"')q=!q;else if(x===','&&!q){o.push(c);c=''}else c+=x}o.push(c);return o}$('#reset').onclick=()=>{if(confirm('Reset all local data?')){localStorage.removeItem(KEY);location.reload()}};render();

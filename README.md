@@ -1,32 +1,25 @@
-# Pickleball Chemistry — Browser Prototype
+# Pickleball Intelligence — Version 1 prototype
 
-A no-install prototype for balanced pickleball open-play matchmaking.
-
-## Run it
-
-Open `index.html` in Chrome, Safari, Edge, or Firefox.
-
-For the most reliable local experience, serve the folder with any simple web server, for example:
-
-```bash
-python3 -m http.server 8000
-```
-
-Then visit `http://localhost:8000`.
+Open `index.html` on a desktop browser, or publish all four files together through GitHub Pages, Netlify, or Vercel. On iPhone, use the hosted website rather than the Files preview.
 
 ## Included
 
-- Player roster and active-session selection
-- 1.0–5.0 skill ratings
-- Multi-court match generation
-- Team balancing based on skill plus partnership chemistry
-- Fairness based on games played
-- Repeat-partner penalty
-- Predicted win probabilities
-- Match-result entry
-- Learned chemistry ratings
-- Local browser persistence using `localStorage`
+- Add and edit players with Cancel, X, and tap-outside dismissal
+- Archive and restore players without deleting history
+- Required age
+- External/DUPR rating, internal rating, and session rating
+- Rating uncertainty shown as error bars
+- Handedness, optional gender, preferred side, play style, club, contact fields, DUPR profile ID, notes, and consent
+- Up to 25 courts
+- Competitive, balanced, chemistry-discovery, and social matchmaking modes
+- Win/loss records and win percentage
+- Communication, court coverage, transition game, finishing, consistency, and enjoyment chemistry dimensions
+- Chemistry confidence and error bars
+- Transparent “Why?” explanations
+- Session health score
+- CSV import and CSV/JSON export
+- Browser-local data persistence
 
-## Prototype limitations
+## Important limitation
 
-This version is single-device and local only. It has no user accounts, cloud database, DUPR integration, authentication, or real-time club management yet.
+This is still a browser prototype. The rating update is an explainable Elo/Glicko-inspired approximation, not yet a formally validated Glicko-2 service. A club-ready build requires secure accounts, encrypted contact data, administrator permissions, legal/privacy review, a server database, and an approved DUPR API/OAuth connection. It must never collect DUPR passwords.
