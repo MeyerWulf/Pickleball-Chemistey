@@ -101,7 +101,11 @@ export function standings(event: Event, players: Player[]): Standing[] {
       if (r) {
         r.pointsFor += a;
         r.pointsAgainst += b;
-        a > b ? r.wins++ : r.losses++;
+        if (a > b) {
+          r.wins++;
+        } else {
+          r.losses++;
+        }
       }
     }
     for (const id of m.teamB) {
@@ -109,7 +113,11 @@ export function standings(event: Event, players: Player[]): Standing[] {
       if (r) {
         r.pointsFor += b;
         r.pointsAgainst += a;
-        b > a ? r.wins++ : r.losses++;
+        if (b > a) {
+          r.wins++;
+        } else {
+          r.losses++;
+        }
       }
     }
   }
