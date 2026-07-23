@@ -1,8 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from 'vitest';
 import App from './App';
 beforeEach(() => localStorage.clear());
+afterEach(cleanup);
 it('creates and reopens an event from local persistence', async () => {
   const u = userEvent.setup();
   const { unmount } = render(<App />);
