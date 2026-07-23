@@ -115,16 +115,24 @@ function executeCommand(data: AppData, c: Command, id: Id, clock: Clock): AppDat
       ),
     };
   }
-  if (c.type === 'deleteEvent')
+  if (c.type === 'deleteEvent') {
+    requireEvent(data, c.id);
     return { ...data, events: data.events.filter((e) => e.id !== c.id) };
+  }
   const event = requireEvent(data, 'eventId' in c ? c.eventId : c.id);
-  if (c.type === 'reopenEvent')
+  if (c.type === 'reopenEvent') {
+    if (event.status !== 'completed') throw Error('Only a completed event can be reopened.');
     return replace(data, { ...event, status: 'active', updatedAt: now });
+  }
   assertWritable(event);
-  if (c.type === 'completeEvent')
+  if (c.type === 'completeEvent') {
+    if (event.stages.some((stage) => stage.status !== 'completed')) {
+      throw Error('Complete every stage before completing this event.');
+    }
     return replace(data, { ...event, status: 'completed', updatedAt: now });
+  }
   if (c.type === 'toggleCheckIn') {
-    requirePlayer(data.players, c.playerId);
+    const player = requirePlayer(data.players, c.playerId);
     if (
       event.checkedIn.includes(c.playerId) &&
       event.stages.some((stage) =>
@@ -134,6 +142,9 @@ function executeCommand(data: AppData, c: Command, id: Id, clock: Clock): AppDat
       )
     ) {
       throw Error('A scheduled player cannot be checked out.');
+    }
+    if (!event.checkedIn.includes(c.playerId) && player.archived) {
+      throw Error('Restore this player before checking them in.');
     }
     return replace(data, {
       ...event,
@@ -228,8 +239,8 @@ function executeCommand(data: AppData, c: Command, id: Id, clock: Clock): AppDat
           m.id !== c.matchId
             ? m
             : c.type === 'saveScore'
-              ? saveResult(m, c.score, event.scoring, clock)
-              : deleteResult(m, clock),
+              ? saveResult(m, c.score, event.scoring, () => now)
+              : deleteResult(m),
         ),
       })),
     })),

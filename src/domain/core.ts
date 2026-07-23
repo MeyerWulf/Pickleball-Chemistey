@@ -50,13 +50,17 @@ export function saveResult(
     result: { score, recordedAt: at },
   };
 }
-export function deleteResult(match: Match, now: Clock): Match {
+export function deleteResult(match: Match): Match {
   return match.result
     ? {
         ...match,
         correctionHistory: [
           ...(match.correctionHistory || []),
-          { score: match.result.score, recordedAt: now(), reason: 'Score deleted' },
+          {
+            score: match.result.score,
+            recordedAt: match.result.recordedAt,
+            reason: 'Score deleted',
+          },
         ],
         result: null,
       }

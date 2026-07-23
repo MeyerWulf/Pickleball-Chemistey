@@ -7,6 +7,7 @@ it('creates and reopens an event from local persistence', async () => {
   const u = userEvent.setup();
   const { unmount } = render(<App />);
   await u.click(screen.getByRole('button', { name: 'Create event' }));
+  expect(screen.getAllByLabelText('Win by')).toHaveLength(1);
   await u.type(screen.getByLabelText('Event name'), 'Friday Flight');
   await u.click(screen.getByRole('button', { name: 'Create & save' }));
   expect(screen.getByText('Friday Flight')).toBeInTheDocument();

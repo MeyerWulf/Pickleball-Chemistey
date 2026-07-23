@@ -89,6 +89,7 @@ export default function App() {
       setError('');
     } catch (e) {
       setError(messageFor(e, 'Restore failed.'));
+      setSaved('');
     }
   };
   const download = () => {
@@ -115,12 +116,17 @@ export default function App() {
           </h1>
         </div>
         <nav aria-label="Primary">
-          <button onClick={() => setSelected('')} className={selected === '' ? 'active' : ''}>
+          <button
+            onClick={() => setSelected('')}
+            className={selected === '' ? 'active' : ''}
+            aria-current={selected === '' ? 'page' : undefined}
+          >
             Events
           </button>
           <button
             onClick={() => setSelected('players')}
             className={selected === 'players' ? 'active' : ''}
+            aria-current={selected === 'players' ? 'page' : undefined}
           >
             Players
           </button>
@@ -303,10 +309,6 @@ function EventForm({ close, run }: { close: () => void; run: Run }) {
           <label>
             Win by
             <input name="winBy" type="number" min="1" max="10" defaultValue="2" required />
-          </label>
-          <label>
-            Win by
-            <input name="winBy" type="number" min="1" defaultValue="2" required />
           </label>
           <div className="actions full">
             <button type="button" onClick={close}>

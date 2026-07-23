@@ -12,6 +12,23 @@ const data = (): AppData => ({
   events: [fixtureEvent()],
 });
 
+function completedData(): AppData {
+  const active = execute(data(), { type: 'startStage', eventId: 'e1', stageId: 's1' }, id, clock);
+  const scored = execute(
+    active,
+    { type: 'saveScore', eventId: 'e1', matchId: 'm1', score: { a: 11, b: 7 } },
+    id,
+    clock,
+  );
+  const finishedStage = execute(
+    scored,
+    { type: 'completeStage', eventId: 'e1', stageId: 's1' },
+    id,
+    clock,
+  );
+  return execute(finishedStage, { type: 'completeEvent', id: 'e1' }, id, clock);
+}
+
 describe('organizer commands', () => {
   it('rejects unknown entities instead of silently succeeding', () => {
     expect(() =>
@@ -23,6 +40,9 @@ describe('organizer commands', () => {
     expect(() =>
       execute(data(), { type: 'deleteScore', eventId: 'e1', matchId: 'missing' }, id, clock),
     ).toThrow('Match not found');
+    expect(() => execute(data(), { type: 'deleteEvent', id: 'missing' }, id, clock)).toThrow(
+      'Event not found',
+    );
   });
 
   it('enforces lifecycle boundaries for assignments and scores', () => {
@@ -83,13 +103,38 @@ describe('organizer commands', () => {
   });
 
   it('protects completed events until they are reopened', () => {
-    const completed = execute(data(), { type: 'completeEvent', id: 'e1' }, id, clock);
+    const completed = completedData();
     expect(() =>
       execute(completed, { type: 'toggleCheckIn', eventId: 'e1', playerId: 'p1' }, id, clock),
     ).toThrow('Reopen');
     expect(execute(completed, { type: 'reopenEvent', id: 'e1' }, id, clock).events[0].status).toBe(
       'active',
     );
+  });
+
+  it('rejects invalid event lifecycle operations', () => {
+    expect(() => execute(data(), { type: 'reopenEvent', id: 'e1' }, id, clock)).toThrow(
+      'Only a completed event',
+    );
+    const activeStage = execute(
+      data(),
+      { type: 'startStage', eventId: 'e1', stageId: 's1' },
+      id,
+      clock,
+    );
+    expect(() => execute(activeStage, { type: 'completeEvent', id: 'e1' }, id, clock)).toThrow(
+      'Complete every stage',
+    );
+  });
+
+  it('requires archived players to be restored before check-in', () => {
+    const initial = data();
+    initial.players[4].archived = true;
+    initial.events[0].checkedIn = initial.events[0].checkedIn.filter((id) => id !== 'p5');
+    initial.events[0].stages[0].waves[0].byes = [];
+    expect(() =>
+      execute(initial, { type: 'toggleCheckIn', eventId: 'e1', playerId: 'p5' }, id, clock),
+    ).toThrow('Restore this player');
   });
 
   it('does not reinterpret recorded scores under different scoring rules', () => {

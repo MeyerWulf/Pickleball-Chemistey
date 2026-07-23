@@ -52,6 +52,7 @@ Install Playwright once with `npx playwright install chromium` if Chromium is no
 - Generate a balanced stage and verify byes are named explicitly.
 - Adjust generated teams and courts before starting the stage.
 - Start a stage; record, correct, and delete a score; verify standings update.
+- Confirm an event cannot be completed while one of its stages is unfinished.
 - Verify an invalid or tied score shows a visible error.
 - Refresh and verify data remains.
 - Export, clear in browser storage, and restore a backup.

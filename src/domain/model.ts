@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 const TimestampSchema = z.string().datetime({ offset: true });
+const EntityIdSchema = z.string().min(1);
 const LocalDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a valid event date.')
@@ -28,14 +29,14 @@ export const ScoringRulesSchema = z.object({
   winBy: z.number().int().min(1).max(10),
 });
 export const PlayerSchema = z.object({
-  id: z.string().min(1),
+  id: EntityIdSchema,
   name: z.string().trim().min(1),
   rating: z.number().min(1).max(8),
   archived: z.boolean(),
   createdAt: TimestampSchema,
 });
 export const TeamSchema = z
-  .tuple([z.string(), z.string()])
+  .tuple([EntityIdSchema, EntityIdSchema])
   .refine(([a, b]) => a !== b, 'Teammates must be different');
 export const ScoreSchema = z.object({ a: z.number().int().min(0), b: z.number().int().min(0) });
 export const ResultRevisionSchema = z.object({
@@ -49,7 +50,7 @@ export const ResultSchema = z.object({
 });
 export const MatchSchema = z
   .object({
-    id: z.string(),
+    id: EntityIdSchema,
     court: z.number().int().min(1),
     teamA: TeamSchema,
     teamB: TeamSchema,
@@ -60,25 +61,30 @@ export const MatchSchema = z
     (m) => new Set([...m.teamA, ...m.teamB]).size === 4,
     'A match requires four distinct players',
   );
-export const WaveSchema = z.object({
-  id: z.string(),
-  matches: z.array(MatchSchema),
-  byes: z.array(z.string()),
-});
+export const WaveSchema = z
+  .object({
+    id: EntityIdSchema,
+    matches: z.array(MatchSchema).min(1, 'A wave requires at least one match.'),
+    byes: z.array(EntityIdSchema),
+  })
+  .refine(
+    (wave) => new Set(wave.matches.map((match) => match.court)).size === wave.matches.length,
+    'A court can host only one match per wave.',
+  );
 export const StageSchema = z.object({
-  id: z.string(),
+  id: EntityIdSchema,
   name: z.string().trim().min(1),
   status: z.enum(['planned', 'active', 'completed']),
-  waves: z.array(WaveSchema),
+  waves: z.array(WaveSchema).min(1, 'A stage requires at least one wave.'),
 });
 export const EventSchema = z.object({
-  id: z.string(),
+  id: EntityIdSchema,
   name: z.string().trim().min(1),
   date: LocalDateSchema,
   courtCount: z.number().int().min(1).max(50),
   status: z.enum(['active', 'completed']),
   scoring: ScoringRulesSchema,
-  checkedIn: z.array(z.string()),
+  checkedIn: z.array(EntityIdSchema),
   stages: z.array(StageSchema),
   createdAt: TimestampSchema,
   updatedAt: TimestampSchema,
@@ -112,6 +118,18 @@ export const AppDataSchema = z
         }
       }
       const nestedIds = new Set<string>();
+      if (event.stages.filter((stage) => stage.status === 'active').length > 1) {
+        context.addIssue({ code: 'custom', message: `${event.name} has multiple active stages.` });
+      }
+      if (
+        event.status === 'completed' &&
+        event.stages.some((stage) => stage.status !== 'completed')
+      ) {
+        context.addIssue({
+          code: 'custom',
+          message: `${event.name} is completed but has an unfinished stage.`,
+        });
+      }
       for (const stage of event.stages) {
         const stageMatches = stage.waves.flatMap((wave) => wave.matches);
         if (stage.status === 'planned' && stageMatches.some((match) => match.result)) {

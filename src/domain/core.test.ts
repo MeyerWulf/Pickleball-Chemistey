@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { balancedStage, saveResult, standings, transitionStage, validateScore } from './core';
+import {
+  balancedStage,
+  deleteResult,
+  saveResult,
+  standings,
+  transitionStage,
+  validateScore,
+} from './core';
 import { fixtureEvent, fixturePlayers } from '../test/fixtures';
+import { WaveSchema } from './model';
 describe('scoring', () => {
   it('accepts 11-9 and extended 13-11', () => {
     expect(() => validateScore({ a: 11, b: 9 }, { target: 11, winBy: 2 })).not.toThrow();
@@ -21,6 +29,19 @@ describe('scoring', () => {
     expect(edit.correctionHistory).toHaveLength(1);
     expect(edit.correctionHistory[0].score).toEqual({ a: 11, b: 7 });
   });
+  it('preserves the original recording timestamp when a score is deleted', () => {
+    const match = saveResult(
+      fixtureEvent().stages[0].waves[0].matches[0],
+      { a: 11, b: 7 },
+      { target: 11, winBy: 2 },
+      () => '2026-01-02T00:00:00.000Z',
+    );
+    expect(deleteResult(match).correctionHistory[0]).toEqual({
+      score: { a: 11, b: 7 },
+      recordedAt: '2026-01-02T00:00:00.000Z',
+      reason: 'Score deleted',
+    });
+  });
 });
 describe('stages', () => {
   it('represents byes and balances teams', () => {
@@ -39,6 +60,16 @@ describe('stages', () => {
     const s = fixtureEvent().stages[0];
     expect(() => transitionStage(s, 'completed')).toThrow();
     expect(transitionStage(s, 'active').status).toBe('active');
+  });
+  it('prevents two simultaneous matches from using the same court', () => {
+    const match = fixtureEvent().stages[0].waves[0].matches[0];
+    expect(() =>
+      WaveSchema.parse({
+        id: 'wave',
+        byes: [],
+        matches: [match, { ...match, id: 'second-match' }],
+      }),
+    ).toThrow('one match per wave');
   });
 });
 it('recalculates standings from results', () => {
